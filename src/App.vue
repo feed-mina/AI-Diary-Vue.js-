@@ -26,6 +26,9 @@ export default{
     Home,
     About,
     NotFound,
+    TreeItem,
+    Modal,
+    DemoGrid
   },
 
   setup(){
@@ -75,14 +78,31 @@ const output = computed(() => marked(input.value));
 const update = debounce((e) => (input.value = e.target.value), 100);
 
 /** 데이터 가져오기 */
-const API_URL = `https://api.github.com/repos/vuejs/core/commits?per_page=3&sha=`;
+const API_URL = 'https://api.github.com/repos/vuejs/core/commits?per_page=3&sha=';
 const branches = ['main', 'v2-compat'];
 const currentBranch = ref(branches[0]);
 const commits = ref([]);
+// 에러 메시지 저장
+const error = ref(null);
+
 
 watchEffect(async () => {
-  const url = `${API_URL}${currentBranch.value}`;
-  commits.value = await (await fetch(url)).json();
+  try {
+    // 브랜치에 따라 API URL 설정
+    const url = `${API_URL}${currentBranch.value}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`API 호출 실패: ${response.status} - ${response.statusText}`);
+    }
+
+    // JSON 데이터 가져오기
+    commits.value = await response.json();
+  } catch (err) {
+    console.error('Error fetching commits:', err);
+    error.value = err.message; // 에러 메시지 저장
+    commits.value = []; // 실패 시 빈 배열로 설정
+  }
 });
 
 const truncate = (v) => {
@@ -218,7 +238,7 @@ onMounted(() => {
 
 return {
   multiSelected,
-      list, groceryList, text, checked, checkedNames, picked, selected, currentView, showModal, msg, todos, insert, reset, shuffle, remove, filteredTodoSample, remainingSample, toggleAll, addTodo, filteredTodos, editTodo, show, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
+      list, groceryList, text, checked, checkedNames, picked, selected, currentView, showModal,  msg, todos, insert, reset, shuffle, remove, filteredTodoSample, remaining, removeCompleted, remainingSample, toggleAll,branches, commits, newTodo, addTodo, filteredTodos, editTodo, show, reverseMessage, notify, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
     };
 }, 
 }
@@ -227,8 +247,6 @@ return {
 <template>
   <v-app> 
   <v-container>
-  <MainWrapper id="mainwrapper">
-    <PageWrap id="pagewrap">
     <v-row>
     <!--컴포넌트와 스토어-->
     <v-col cols="12" md="6" class="component_storeSection">
@@ -309,8 +327,37 @@ return {
       </v-card>
     </v-col>
   </v-row> 
-        </PageWrap>
-      </MainWrapper>
+
+  <!-- TodoMVC -->
+  <v-row>
+    <v-col cols="12">
+      <v-card outlined>
+        <v-card-title>TodoMVC</v-card-title>
+        <v-card-text>
+          <v-text-field class="mb-3" v-model="newTodo" label="What needs to be done? "
+          @keyup.enter="addTodo" />
+          <v-list>
+            <v-list-item 
+            v-for="todo in filteredTodos" 
+            :key="todo.id"
+            :class="{ completed : todo.completed }">
+            <v-checkbox v-model="todo.completed" />
+            <v-list-item-content>
+              <v-list-item-title>{{ todo.title }}</v-list-item-title>
+            </v-list-item-content>
+            <v-btn icon @click="removeTodo(todo)">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="removeCompleted">Clear Completed</v-btn>
+          <span>{{ remaining }} items left</span>
+        </v-card-actions>
+      </v-card>
+    </v-col>
+    </v-row>
 </v-container>
 
     </v-app>

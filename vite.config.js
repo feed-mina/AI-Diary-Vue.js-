@@ -9,4 +9,9 @@ export default defineConfig({
       "lodash-es": "lodash-es/lodash.js",
     },
   },
+  build: {
+    rollupOptions: {
+      external: ["vuetify"],
+    },
+  },
 });
