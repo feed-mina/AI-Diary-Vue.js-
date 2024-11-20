@@ -1,24 +1,30 @@
-<script setup lang="ts">
-import { ref, computed, defineProps } from 'vue';
+<script setup>
+import { ref, computed } from 'vue';
 
-const props = defineProps<{
-  data: Array<any>;
-  columns: Array<string>;
-  filterKey: string;
-}>();
+// Props 정의 (JavaScript에서는 타입 제거)
+const props = defineProps({
+  data: Array,
+  columns: Array,
+  filterKey: String,
+});
 
+// 정렬 키와 정렬 순서 설정
 const sortKey = ref('');
 const sortOrders = ref(
-  props.columns.reduce((o, key) => ((o[key] = 1), o), {})
+  props.columns.reduce((o, key) => {
+    o[key] = 1;
+    return o;
+  }, {})
 );
 
+// 필터 및 정렬된 데이터 계산
 const filteredData = computed(() => {
   let { data, filterKey } = props;
   if (filterKey) {
     filterKey = filterKey.toLowerCase();
     data = data.filter((row) => {
       return Object.keys(row).some((key) => {
-        return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+        return String(row[key]).toLowerCase().includes(filterKey);
       });
     });
   }
@@ -35,12 +41,14 @@ const filteredData = computed(() => {
   return data;
 });
 
-function sortBy(key: string) {
+// 정렬 함수
+function sortBy(key) {
   sortKey.value = key;
   sortOrders.value[key] *= -1;
 }
 
-function capitalize(str: string) {
+// 문자열 첫 글자 대문자로 변환
+function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 </script>
@@ -69,3 +77,4 @@ function capitalize(str: string) {
   </table>
   <p v-else>No matches found.</p>
 </template>
+

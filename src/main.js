@@ -1,13 +1,27 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-import Vue from "vue";
-import Vuetify from "vuetify";
-import "vuetify/dist/vuetify.min.css";
-createApp(App).mount("#app");
+import router from "./router/index.js"; // 라우터 설정이 있다면
+import store from "./store/store.js"; // 상태 관리 라이브러리
 
-Vue.use(Vuetify);
+import { createVuetify } from "vuetify"; // Vuetify 가져오기
+import "vuetify/styles"; // Vuetify 스타일 가져오기
+import { aliases, mdi } from "vuetify/iconsets/mdi"; // 아이콘 설정 (옵션)
 
-export default new Vue({
-  vuetify: new Vuetify(),
-  render: (h) => h(App),
-}).$mount("#app");
+// Vuetify 설정
+const vuetify = createVuetify({
+  icons: {
+    defaultSet: "mdi",
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
+});
+
+const app = createApp(App);
+
+app.use(router); // 라우터 추가
+app.use(store); // 상태 관리 라이브러리 추가
+app.use(vuetify); // Vuetify 등록
+
+app.mount("#app"); // #app에 마운트

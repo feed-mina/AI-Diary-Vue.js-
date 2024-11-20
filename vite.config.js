@@ -1,17 +1,12 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  server: {
-    hmr: {
-      overlay: false, // 오류 오버레이 비활성화
-    },
-  },
   resolve: {
     alias: {
-      'lodash-es': 'lodash-es/lodash.js'
+      "@": "/src", // 경로 별칭 설정
+      "lodash-es": "lodash-es/lodash.js",
     },
   },
-})
+});

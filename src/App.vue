@@ -1,35 +1,44 @@
-<script setup>
+<script>
 import { ref, reactive, computed, watchEffect, onMounted } from 'vue';
 import { debounce } from 'vue-debounce';
 import { shuffle as _shuffle } from 'lodash-es';
 import { marked } from 'marked';
 import DemoGrid from './Grid.vue';
-import Home from './page/Home.vue';
-import About from './page/About.vue';
-import NotFound from './page/NotFound.vue';
+import Home from '@/page/Home.vue';
+import About from '@/page/About.vue';
+import NotFound from '@/page/NotFound.vue';
+import ComponentA from '@/components/ComponentA.vue';
+import ComponentB from '@/components/ComponentB.vue';
+import ComponentC from '@/components/ComponentC.vue'
+import TreeItem from '@/TreeItem.vue';
+import Modal from '@/Modal.vue'; 
+
 // import DiaryNone from './page/DiaryNone'
 // import DiaryWriting from './page/DiaryWriting'
 // import kakaoLogin from './page/KakaoLogin'
 // import Tutorial from './page/Tutorial'
 // import DiaryView from './page/DiaryView'
-import ComponentA from './components/ComponentA.vue';
-import ComponentB from './components/ComponentB.vue';
-import TreeItem from './TreeItem.vue';
-import Modal from './Modal.vue';
+export default{
+  components :{
+    ComponentA,
+    ComponentB,
+    ComponentC,
+    Home,
+    About,
+    NotFound,
+  },
+
+  setup(){
 
 /** 라우터 튜토리얼 */
 const routes = {
   '/': Home,
-  '/about': About,
-  '/home': Home,
-  // '/emptyDiary' : DiaryNone,
-  // '/writeDiary' : DiaryWriting,
-  // '/kakaoLogin' : kakaoLogin,
-  // '/login' : LoginNew,
-  // '/tutorial' : Tutorial ,
+  '/about': About, 
   '/NotFound' : NotFound,
 
 };
+
+
 const currentPath = ref(window.location.hash);
 const currentView = computed(() => {
   return routes[currentPath.value.slice(1) || '/'] || NotFound;
@@ -69,7 +78,7 @@ const update = debounce((e) => (input.value = e.target.value), 100);
 const API_URL = `https://api.github.com/repos/vuejs/core/commits?per_page=3&sha=`;
 const branches = ['main', 'v2-compat'];
 const currentBranch = ref(branches[0]);
-const commits = ref(null);
+const commits = ref([]);
 
 watchEffect(async () => {
   const url = `${API_URL}${currentBranch.value}`;
@@ -134,37 +143,54 @@ const remove = (item) => {
 /** TodoMVC */
 const STORAGE_KEY = 'vue-todomvc';
 const filters = {
-  all: (todos) => todos,
-  active: (todos) => todos.filter((todo) => !todo.completed),
-  completed: (todos) => todos.filter((todo) => todo.completed),
+  all: (todoSample) => todoSample,
+  active: (todoSample) => todoSample.filter((todo) => !todo.completed),
+  completed: (todoSample) => todoSample.filter((todo) => todo.completed),
 };
 
-const todos = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+const todoSample = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
 const visibility = ref('all');
 const editedTodo = ref();
 
-const filteredTodos = computed(() => filters[visibility.value](todos.value));
-const remaining = computed(() => filters.active(todos.value).length);
+const filteredTodoSample = computed(() => filters[visibility.value](todoSample.value));
+const remainingSample = computed(() => filters.active(todoSample.value).length);
 
 watchEffect(() => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos.value));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(todoSample.value));
 });
 
 const toggleAll = (e) => {
-  todos.value.forEach((todo) => (todo.completed = e.target.checked));
+  todoSample.value.forEach((todo) => (todo.completed = e.target.checked));
 };
 
-const addTodo = (e) => {
-  const value = e.target.value.trim();
+const todos = ref([]);
+const newTodo = ref("");
+const addTodo = () => {
+  const value = newTodo.value.trim();
   if (value) {
-    todos.value.push({ id: Date.now(), title: value, completed: false });
-    e.target.value = '';
-  }
+    todos.value.push({ 
+        id: Date.now(), 
+        title: value, 
+        completed: false 
+      });
+      newTodo.value = '';
 };
 
-const removeTodo = (todo) => {
-  todos.value.splice(todos.value.indexOf(todo), 1);
+}
+const removeTodoSample = (todo) => {
+  todos.value.splice(todoSample.value.indexOf(todo), 1);
 };
+
+const removeTodo2 = (todo) =>{
+  todos.value = todos.value.filter((t)=> t.id !== todo.id);
+};
+
+const removeCompleted = () =>{
+  todos.value = todos.value.filter((todo)=> !todo.completed);
+};
+
+const filteredTodos = computed(()=>todos.value);
+const remaining = computed(() => todos.value.filter((todo) => !tldl.completed));
 
 const editTodo = (todo) => {
   beforeEditCache = todo.title;
@@ -182,296 +208,112 @@ const doneEdit = (todo) => {
     todo.title = todo.title.trim();
     if (!todo.title) removeTodo(todo);
   }
-};
-
-const removeCompleted = () => (todos.value = filters.active(todos.value));
+}; 
 
 onMounted(() => {
   window.addEventListener('hashchange', () => {
     currentPath.value = window.location.hash;
   });
 });
+
+return {
+  multiSelected,
+      list, groceryList, text, checked, checkedNames, picked, selected, currentView, showModal, msg, todos, insert, reset, shuffle, remove, filteredTodoSample, remainingSample, toggleAll, addTodo, filteredTodos, editTodo, show, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
+    };
+}, 
+}
 </script> 
 
 <template>
-  <div>
+  <v-app> 
+  <v-container>
+  <MainWrapper id="mainwrapper">
+    <PageWrap id="pagewrap">
+    <v-row>
     <!--컴포넌트와 스토어-->
-    <div class="component_storeSection">
-      <h1>컴포넌트와 스토어 튜터리얼</h1>
-      <ComponentA />
-      <ComponentB />
-    </div>
+    <v-col cols="12" md="6" class="component_storeSection">
+      <v-card outlined>
+      <v-card-title>컴포넌트와 스토어 튜터리얼</v-card-title>
+        <v-card-text>
+          <ComponentA />
+          <ComponentB />
+        </v-card-text>
+      </v-card>
+    </v-col>
     <!--라우터 튜터리얼-->
-    <div class="routeSection">
-      <h1>라우터 튜터리얼</h1>
-      <a href="#/">Home</a> |
-      <a href="#/about">About</a> |
-      <a href="#/non-existent-path">잘못된 링크</a>
-      <component :is="currentView" />
-    </div>
+    <v-col class="routeSection">
+      <v-card outlined>
+        <v-card-title>라우터 튜터리얼</v-card-title>
+       <v-card-text>
+        <v-btn href="#/" color="primary" text>Home</v-btn> |
+        <v-btn href="#/about">About</v-btn> |
+        <v-btn href="#/non-existent-path">잘못된 링크</v-btn>
+        <v-component :is="currentView" /> 
+       </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
+      <!-- Form 바인딩 -->
+ 
+  <v-row>
+    <v-col cols="12" md="6">
+      <v-card outlined>
+          <v-card-text>
+            <v-text-field v-model="text" label="텍스트 입력하기" outlined/>
+            <v-checkbox v-model="checked" label="체크박스"/>
+            <v-checkbox-group v-model="checkedNames" column>
+            <v-checkbox label="Jack" value="Jack"/>
+            <v-checkbox label="john" value="john"/>
+            <v-checkbox label="Mike" value="Mike"/>
+            </v-checkbox-group>
 
-    <!--
-         <h1>{{ message }}</h1>  
-        <div class="componentSection">
-          <h1>단순한 컴포넌트</h1>
-          <ol>
-            <TodoItem
-            v-for="item in groceryList"
-            :todo="item"
-            :key="item.id"
-            >
-            </TodoItem>
-          </ol>
-        </div>
-        -->
+            <v-radio-group v-model="picked">
+              <v-radio label="One" value="One" />
+              <v-radio label="Two" value="Two" />
+            </v-radio-group>
 
-
-    <MainWrapper id="mainwrapper">
-      <PageWrap id="pagewrap">
-        <div class="formSection">
-          <h1>Form 바인딩</h1>
-          <h2>텍스트 입력하기 </h2>
-          <input v-model="text">
-          {{text}}
-
-          <h2>체크박스</h2>
-          <input type="checkbox" id="checkbox" v-model="checked">
-          <label for="checkbox">Checked :{{checked }}</label>
-
-          <h2> 멀티 체크박스 </h2>
-          <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
-
-          <label for="jack">Jack</label>
-          <input type="checkbox" id="john" value="John" v-model="checkedNames">
-
-          <label for="john">
-            John
-          </label>
-          <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
-          <label for="mike">Mike</label>
-          <p>checkedNames : {{checkedNames}}</p>
-
-          <h2>라디오 버튼</h2>
-          <input type="radio" id="one" value="One" v-model="picked">
-          <label for="one">One</label>
-
-
-          <input type="radio" id="two" value="Two" v-model="picked">
-          <label for="two">Two</label>
-          <p>picked : {{picked}}</p>
-
-          <h2>셀랙트 박스</h2>
-          <select v-model="selected">
-            <option disabled value="">select one</option>
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-          </select>
-          <p>selected : {{selected}}</p>
-
-          <h2>Multi select</h2>
-          <select v-model="multiSelected" multiple style="width: 100px;">
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-          </select>
-          <p>selected : {{multiSelected}}</p>
-
-        </div>
-
-        <div class="inputhandlingSection">
-          <h1>사용자 입력 핸들링</h1>
-          <button @click="reverseMessage">reverseMessage</button>
-          <br>
-
-          <button @click="message += '!'">Append "!"
-          </button>
-          <br>
-
-          <a href="www.naver.com" @click.prevent="notify">
-            A link with e.preventDefault()
-          </a>
-        </div>
-
-        <div class="PropsEXSection">
-          <p>
-            <span :title="message">
-              여기에 마우스를 두면 몇 초 후에 타이틀이 뜹니다!
-            </span>
-          </p>
-
-          <p :class="{ red :isRed}" @click="toggleRed">
-            이 문장은 빨간색입니다. 클릭하면 토글되어 검정색 글자가 됩니다.
-          </p>
-
-          <p :style="{color}" @click="toggleColor">
-            이 문장을 클릭하면 초록색과 파랑색의 글자가 바뀝니다
-          </p>
-        </div>
-
-        <div class="vIFandVForSection">
-          <button @click="show = !show">Toggle list</button>
-          <button @click="list.push(list.length + 1)">push number</button>
-          <button @click="list.pop()">pop number</button>
-          <button @click="list.reverse()">Reverse List</button>
-          <ul v-if="show && list.length">
-            <li v-for="(item, index) in  list" :key="index">{{ item }}</li>
-          </ul>
-          <p v-else-if="list.length"> list is not empty , but hidden</p>
-          <p v-else>list is empty</p>
-        </div>
-
-
-        <!--Markdown 편집기 -->
-
-        <div class="MarkdownSection">
-          <h1>Markdown 편집기</h1>
-          <div class="editor">
-            <textarea class="input" :value="input" @input="update">
-
-              </textarea>
-            <div class="output" v-html="output"></div>
-          </div>
-        </div>
-
-
-        <!-- 데이터 가져오기  -->
-        <div class="listSection">
-          <div v-for="branch in branches" :key="branch">
-            <h1>데이터 가져오기</h1>
-            <input type="radio" :id="branch" :value="branch" name="branch" v-model="currentBranch" />
-            <label :for="branch">{{ branch }}</label>
-
-            <p>vuejs/vue@{{ currentBranch }}</p>
-            <ul>
-              <!-- commits 반복에서 기본값 추가 -->
-              <li v-for="{ html_url, sha, author, commit } in commits" :key="sha || html_url">
-                <a :href="html_url" target="_blank" class="commit">
-                  {{ sha ? sha.substring(0, 7) : 'N/A' }}
-                </a>
-                -
-                <span class="message">{{ commit?.message ? truncate(commit.message) : 'No message' }}</span><br>
-
-                by
-                <span class="author">
-                  <a :href="author?.html_url || '#'" target="_blank">
-                    {{ commit?.author?.name || 'Unknown Author' }}
+            <v-select v-model="selected" :items="['A','B','C']" label="셀렉트 박스" outlined/>
+            <v-select v-model="multiSelected" :items="['A','B','C']" label="Multi Select" multiple outlined/>
+          </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
+  <!--데이터가져오기-->
+  <v-row>
+    <v-col>
+      <v-card outlined>
+        <v-card-title>데이터 가져오기</v-card-title>
+          <v-card-text>
+            <v-radio-group>
+            <v-radio
+              v-for="brnch in branches"
+              :key="branch"
+              :label="branch"
+              :value="branch"/>
+            </v-radio-group>
+            <v-list>
+              <v-list-item v-for="{ html_url, sha, author, commit } in commits" :key="sha || html_url">
+              <v-list-item-content>
+                <v-list-item-title>
+                  <a :href="html_url" target="_blank">
+                    {{  sha?.substring(0, 7) || 'N/A' }}
                   </a>
-                </span>
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{  commit?.message || 'No message' }} - {{ commit?.author?.name || 'Unknown Author' }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row> 
+        </PageWrap>
+      </MainWrapper>
+</v-container>
 
-                at
-                <span class="date">
-                  {{ commit?.author?.date ? formatDate(commit.author.date) : 'Unknown Date' }}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="fliterSection">
-          <!-- 정렬과 필터가 있는 그리드 -->
-          <h1>정렬과 필터가 있는 그리드</h1>
-          <form id="search">
-            Search <input name="query" v-model="searchQuery">
-          </form>
-          <DemoGrid :data="gridData" :columns="gridColumns" :filter-key="searchQuery">
-          </DemoGrid>
-        </div>
-
-        <div class="treeSection">
-          <h1>트리 뷰</h1>
-          <!-- 트리뷰 -->
-          <ul>
-            <TreeItem class="item" :model="treeData"></TreeItem>
-          </ul>
-        </div>
-
-        <div class="modalSection">
-          <!--모달 컴포넌트-->
-          <h1>트렌지션으로 모달 구현</h1>
-          <button id="show-modal" @click="showModal = true">
-            show Modal
-          </button>
-          <Teleport to="body">
-            <!--use the modal component, pass in the prop-->
-            <modal :show="showModal" @close="showModal = false">
-              <template #header>
-                <h3>Custom Header</h3>
-              </template>
-            </modal>
-          </Teleport>
-        </div>
-
-        <!--트렌직션으로 리스트 구현하기-->
-        <div class="listSection">
-          <h1>트렌지션으로 리스트 구현</h1>
-          <button @click="insert">Insert at random index</button>
-          <button @click="reset">Reset</button>
-          <button @click="shuffle">Shuffle</button>
-          <TransitionGroup tag="ul" name="fade" class="container">
-            <li v-for="item in items" class="item" :key="item">
-              {{ item }}
-              <button @click="remove(item)">X</button>
-            </li>
-          </TransitionGroup>
-        </div>
-
-        <div class="todoSection">
-          <h1>TodoMVC</h1>
-          <!--Todo-->
-          <section class="todoapp">
-            <header class="header">
-              <h1>Todos</h1>
-              <input class="new-todo" autofocus placeholder="What needs to be done?" @keyup.enter="addTodo" />
-            </header>
-            <section class="main" v-show="todos.length">
-              <input id="toggle-all" class="toggle-all" type="checkbox" :checked="remaining === 0"
-                @change="toggleAll" />
-              <label for="toggle-all">Mark all as complete</label>
-              <ul class="todo-list">
-                <li v-for="todo in filteredTodos" class="todo" :key="todo.id"
-                  :class="{ completed: todo.completed, editing: todo === editedTodo }">
-                  <div class="view">
-                    <input class="toggle" type="checkbox" v-model="todo.completed" />
-                    <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
-                    <button class="destroy" @click="removeTodo(todo)"></button>
-                  </div>
-                  <input v-if="todo === editedTodo" class="edit" type="text" v-model="todo.title" @blur="doneEdit(todo)"
-                    @keyup.enter="doneEdit(todo)" @keyup.escape="cancelEdit(todo)" />
-                </li>
-              </ul>
-            </section>
-
-            <footer class="footer" v-show="todos.length">
-              <span class="todo-count">
-                <strong>{{ remaining }}</strong>
-                <span>{{ remaining === 1 ? 'item' : ' items' }} left</span>
-              </span>
-              <ul class="filters">
-                <li>
-                  <a href="#/all" :class="{ selected: visibility === 'all' }">All</a>
-                </li>
-                <li>
-                  <a href="#/active" :class="{ selected: visibility === 'active' }">Active</a>
-                </li>
-                <li>
-                  <a href="#/completed" :class="{ selected: visibility === 'completed' }">Completed</a>
-                </li>
-              </ul>
-              <button class="clear-completed" @click="removeCompleted" v-show="todos.length > remaining">
-                Clear completed
-              </button>
-            </footer>
-          </section>
-        </div>
-
-
-
-      </PageWrap>
-    </MainWrapper>
-  </div>
-
-
+    </v-app>
 </template>
 
 
