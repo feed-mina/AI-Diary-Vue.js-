@@ -361,7 +361,9 @@ return {
               outlined
               dense
               @keyup.enter="addTodo"
-            ></v-text-field>
+            />
+
+          </v-card-text>
 
             <!-- Todo List -->
             <v-list v-if="todos.length">
@@ -374,7 +376,7 @@ return {
                   <v-checkbox v-model="todo.completed" @change="toggleTodo(todo)" />
                 </v-list-item-action>
                 <v-list-item-content>
-                  <v-list-item-title @dblclick="editTodo(todo)">
+                  <v-list-item-title >
                     {{ todo.title }}
                   </v-list-item-title>
                 </v-list-item-content>
@@ -385,8 +387,6 @@ return {
                 </v-list-item-action>
               </v-list-item>
             </v-list>
-          </v-card-text>
-
           <!-- Footer -->
           <v-card-actions v-if="todos.length">
             <v-row justify="space-between" align="center">
@@ -429,7 +429,6 @@ return {
 @import url("https://unpkg.com/todomvc-app-css@2.4.1/index.css");
  
 
-.inputhandlingSection,
 .vIFandVForSection,
 .PropsEXSection,
 .formSection,
@@ -447,6 +446,9 @@ return {
 }
 
 
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
 </style>
 
  
