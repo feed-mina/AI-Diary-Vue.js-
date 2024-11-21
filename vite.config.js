@@ -14,4 +14,7 @@ export default defineConfig({
       external: ["vuetify"],
     },
   },
+  optimizeDeps: {
+    include: ["vue-debounce"], // 명시적으로 추가
+  },
 });
