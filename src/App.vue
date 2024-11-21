@@ -12,7 +12,6 @@ import ComponentB from '@/components/ComponentB.vue';
 import ComponentC from '@/components/ComponentC.vue'
 import TreeItem from '@/TreeItem.vue';
 import Modal from '@/Modal.vue'; 
-
 // import DiaryNone from './page/DiaryNone'
 // import DiaryWriting from './page/DiaryWriting'
 // import kakaoLogin from './page/KakaoLogin'
@@ -54,9 +53,9 @@ const groceryList = ref([
   { id: 2, text: '아무거나' },
 ]);
 
-const text = ref('Edit me');
-const checked = ref(true);
-const checkedNames = ref(['Jack']);
+// const text = ref('Edit me');
+// const checked = ref(true);
+// const checkedNames = ref(['Jack']);
 const picked = ref('One');
 const selected = ref('A');
 const multiSelected = ref(['A']);
@@ -104,6 +103,10 @@ watchEffect(async () => {
     commits.value = []; // 실패 시 빈 배열로 설정
   }
 });
+const text= ''; // 텍스트 필드 값
+const checked= false; // 단일 체크박스 상태
+const checkedNames= []; // 체크박스 그룹 상태
+const checkboxItems= ['Jack', 'John', 'Mike']; // 체크박스 그룹 항목
 
 const truncate = (v) => {
   const newline = v.indexOf('\n');
@@ -167,7 +170,11 @@ const filters = {
   active: (todoSample) => todoSample.filter((todo) => !todo.completed),
   completed: (todoSample) => todoSample.filter((todo) => todo.completed),
 };
-
+const filteredTodos = computed(() => {
+      if (visibility.value === 'all') return todos.value;
+      if (visibility.value === 'active') return todos.value.filter((todo) => !todo.completed);
+      if (visibility.value === 'completed') return todos.value.filter((todo) => todo.completed);
+    });
 const todoSample = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
 const visibility = ref('all');
 const editedTodo = ref();
@@ -183,6 +190,9 @@ const toggleAll = (e) => {
   todoSample.value.forEach((todo) => (todo.completed = e.target.checked));
 };
 
+const toggleTodo= (todo) => {
+      todo.completed = !todo.completed;
+    };
 const todos = ref([]);
 const newTodo = ref("");
 const addTodo = () => {
@@ -200,17 +210,19 @@ const addTodo = () => {
 const removeTodoSample = (todo) => {
   todos.value.splice(todoSample.value.indexOf(todo), 1);
 };
+const setVisibility = (newVisibility) => {
+  visibility.value = newVisibility;
+};
 
-const removeTodo2 = (todo) =>{
+const removeTodo = (todo) =>{
   todos.value = todos.value.filter((t)=> t.id !== todo.id);
 };
 
 const removeCompleted = () =>{
   todos.value = todos.value.filter((todo)=> !todo.completed);
 };
-
-const filteredTodos = computed(()=>todos.value);
-const remaining = computed(() => todos.value.filter((todo) => !tldl.completed));
+ 
+const remaining = computed(() => todos.value.filter((todo) => !todo.completed));
 
 const editTodo = (todo) => {
   beforeEditCache = todo.title;
@@ -238,7 +250,7 @@ onMounted(() => {
 
 return {
   multiSelected,
-      list, groceryList, text, checked, checkedNames, picked, selected, currentView, showModal,  msg, todos, insert, reset, shuffle, remove, filteredTodoSample, remaining, removeCompleted, remainingSample, toggleAll,branches, commits, newTodo, addTodo, filteredTodos, editTodo, show, reverseMessage, notify, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
+      list, groceryList, text, checked, checkedNames,checkboxItems, picked, selected, currentView, showModal,  msg, todos, insert, reset, shuffle, toggleTodo,  remove, filteredTodoSample, visibility, setVisibility, remaining, removeCompleted, remainingSample, toggleAll,branches, commits, newTodo, addTodo,removeTodo, filteredTodos, editTodo, show, reverseMessage, notify, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
     };
 }, 
 }
@@ -266,7 +278,7 @@ return {
         <v-btn href="#/" color="primary" text>Home</v-btn> |
         <v-btn href="#/about">About</v-btn> |
         <v-btn href="#/non-existent-path">잘못된 링크</v-btn>
-        <v-component :is="currentView" /> 
+        <component :is="currentView" /> 
        </v-card-text>
       </v-card>
     </v-col>
@@ -279,11 +291,16 @@ return {
           <v-card-text>
             <v-text-field v-model="text" label="텍스트 입력하기" outlined/>
             <v-checkbox v-model="checked" label="체크박스"/>
-            <v-checkbox-group v-model="checkedNames" column>
-            <v-checkbox label="Jack" value="Jack"/>
-            <v-checkbox label="john" value="john"/>
-            <v-checkbox label="Mike" value="Mike"/>
-            </v-checkbox-group>
+            <div>
+      <p>체크박스 그룹:</p>
+      <v-checkbox 
+        v-for="name in checkboxItems"
+        :key="name"
+        :label="name"
+        :value="name"
+        v-model="checkedNames"/>
+      </div>
+
 
             <v-radio-group v-model="picked">
               <v-radio label="One" value="One" />
@@ -304,7 +321,7 @@ return {
           <v-card-text>
             <v-radio-group>
             <v-radio
-              v-for="brnch in branches"
+              v-for="branch in branches"
               :key="branch"
               :label="branch"
               :value="branch"/>
@@ -329,34 +346,76 @@ return {
   </v-row> 
 
   <!-- TodoMVC -->
-  <v-row>
-    <v-col cols="12">
-      <v-card outlined>
-        <v-card-title>TodoMVC</v-card-title>
-        <v-card-text>
-          <v-text-field class="mb-3" v-model="newTodo" label="What needs to be done? "
-          @keyup.enter="addTodo" />
-          <v-list>
-            <v-list-item 
-            v-for="todo in filteredTodos" 
-            :key="todo.id"
-            :class="{ completed : todo.completed }">
-            <v-checkbox v-model="todo.completed" />
-            <v-list-item-content>
-              <v-list-item-title>{{ todo.title }}</v-list-item-title>
-            </v-list-item-content>
-            <v-btn icon @click="removeTodo(todo)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </v-list-item>
-          </v-list>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="removeCompleted">Clear Completed</v-btn>
-          <span>{{ remaining }} items left</span>
-        </v-card-actions>
-      </v-card>
-    </v-col>
+  
+  <v-row justify="center">
+      <v-col cols="12" md="8">
+        <v-card>
+          <v-card-title class="text-h5">TodoMVC</v-card-title>
+
+          <!-- Todo Section -->
+          <v-card-text>
+            <!-- Add Todo Input -->
+            <v-text-field
+              v-model="newTodo"
+              label="What needs to be done?"
+              outlined
+              dense
+              @keyup.enter="addTodo"
+            ></v-text-field>
+
+            <!-- Todo List -->
+            <v-list v-if="todos.length">
+              <v-list-item
+                v-for="todo in filteredTodos"
+                :key="todo.id"
+                :class="{ 'text-decoration-line-through': todo.completed }"
+              >
+                <v-list-item-action>
+                  <v-checkbox v-model="todo.completed" @change="toggleTodo(todo)" />
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title @dblclick="editTodo(todo)">
+                    {{ todo.title }}
+                  </v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-btn icon color="red" @click="removeTodo(todo)">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+          </v-card-text>
+
+          <!-- Footer -->
+          <v-card-actions v-if="todos.length">
+            <v-row justify="space-between" align="center">
+              <v-col cols="auto">
+                <span>
+                  <strong>{{ remaining }}</strong>
+                  {{ remaining === 1 ? 'item' : 'items' }} left
+                </span>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn text @click="setVisibility('all')" :class="{ 'text--primary': visibility === 'all' }">
+                  All
+                </v-btn>
+                <v-btn text @click="setVisibility('active')" :class="{ 'text--primary': visibility === 'active' }">
+                  Active
+                </v-btn>
+                <v-btn text @click="setVisibility('completed')" :class="{ 'text--primary': visibility === 'completed' }">
+                  Completed
+                </v-btn>
+              </v-col>
+              <v-col cols="auto">
+                <v-btn outlined color="primary" v-show="todos.length > remaining" @click="removeCompleted">
+                  Clear Completed
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-row>
 </v-container>
 

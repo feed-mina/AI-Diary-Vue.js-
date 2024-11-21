@@ -17,4 +17,8 @@ export default defineConfig({
   optimizeDeps: {
     include: ["vue-debounce"], // 명시적으로 추가
   },
+  compilerOptions: {
+    isCustomElement: (tag) =>
+      ["v-checkbox-group", "v-list-item-content"].includes(tag),
+  },
 });
