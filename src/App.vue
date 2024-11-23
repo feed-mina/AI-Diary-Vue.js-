@@ -1,6 +1,6 @@
 <script>
 import { ref, reactive, computed, watchEffect, onMounted } from 'vue';
-import { debounce } from 'vue-debounce';
+import debounce from 'vue-debounce';
 // import debounce from 'lodash/debounce';
 import { shuffle as _shuffle } from 'lodash-es';
 import { marked } from 'marked';
@@ -171,13 +171,18 @@ const filters = {
   active: (todoSample) => todoSample.filter((todo) => !todo.completed),
   completed: (todoSample) => todoSample.filter((todo) => todo.completed),
 };
+
+const visibility = ref('all');
 const filteredTodos = computed(() => {
+    console.log(`visibioity : ${visibility.value}`);
+    console.log(`Todos:`, todos.value);
       if (visibility.value === 'all') return todos.value;
       if (visibility.value === 'active') return todos.value.filter((todo) => !todo.completed);
       if (visibility.value === 'completed') return todos.value.filter((todo) => todo.completed);
+      return [];
     });
+
 const todoSample = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
-const visibility = ref('all');
 const editedTodo = ref();
 
 const filteredTodoSample = computed(() => filters[visibility.value](todoSample.value));
@@ -193,6 +198,7 @@ const toggleAll = (e) => {
 
 const toggleTodo= (todo) => {
       todo.completed = !todo.completed;
+      console.log(`Todo 상태 변경 :  ${JSON.stringify(todo)}`);
     };
 const todos = ref([]);
 const newTodo = ref("");
@@ -223,7 +229,7 @@ const removeCompleted = () =>{
   todos.value = todos.value.filter((todo)=> !todo.completed);
 };
  
-const remaining = computed(() => todos.value.filter((todo) => !todo.completed));
+const remaining = computed(() => todos.value.filter((todo) => !todo.completed).length);
 
 const editTodo = (todo) => {
   beforeEditCache = todo.title;
@@ -292,22 +298,22 @@ return {
           <v-card-text>
             <v-text-field v-model="text" label="텍스트 입력하기" outlined/>
             <v-checkbox v-model="checked" label="체크박스"/>
+              <!-- 체크박스 그룹 -->
             <div>
-      <p>체크박스 그룹:</p>
-      <v-checkbox 
-        v-for="name in checkboxItems"
-        :key="name"
-        :label="name"
-        :value="name"
-        v-model="checkedNames"/>
-      </div>
-
-
+              <p>체크박스 그룹:</p>
+              <v-checkbox 
+                v-for="name in checkboxItems"
+                :key="name"
+                :label="name"
+                :value="name"
+                v-model="checkedNames"/>
+            </div>
+            <!-- 라디오 버튼 -->
             <v-radio-group v-model="picked">
               <v-radio label="One" value="One" />
               <v-radio label="Two" value="Two" />
             </v-radio-group>
-
+            <!-- 단일 선택 드롭다운 -->
             <v-select v-model="selected" :items="['A','B','C']" label="셀렉트 박스" outlined/>
             <v-select v-model="multiSelected" :items="['A','B','C']" label="Multi Select" multiple outlined/>
           </v-card-text>
@@ -320,24 +326,32 @@ return {
       <v-card outlined>
         <v-card-title>데이터 가져오기</v-card-title>
           <v-card-text>
-            <v-radio-group>
+            <v-radio-group v-model="currentBranch">
             <v-radio
               v-for="branch in branches"
               :key="branch"
               :label="branch"
               :value="branch"/>
             </v-radio-group>
-            <v-list>
-              <v-list-item v-for="{ html_url, sha, author, commit } in commits" :key="sha || html_url">
-                <v-list-item-title>
-                  <a :href="html_url" target="_blank">
-                    {{  sha?.substring(0, 7) || 'N/A' }}
-                  </a>
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{  commit?.message || 'No message' }} - {{ commit?.author?.name || 'Unknown Author' }}
-                </v-list-item-subtitle>
-              </v-list-item>
+            <!--데이터 리스트-->
+              <v-list>
+                <template v-if="error">
+                  <v-list-item>
+                      <v-list-item-title>Error:{{error}}</v-list-item-title>
+                  </v-list-item>
+                  </template>
+                  <template v-else> 
+                    <v-list-item v-for="{ html_url, sha, author, commit } in commits" :key="sha || html_url">
+                    <v-list-item-title>
+                      <a :href="html_url" target="_blank">
+                      {{  sha?.substring(0, 7) || 'N/A' }}
+                    </a>
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{  commit?.message || 'No message' }} - {{ commit?.author?.name || 'Unknown Author' }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+              </template>
             </v-list>
           </v-card-text>
       </v-card>
@@ -371,17 +385,29 @@ return {
                 :key="todo.id"
                 :class="{ 'text-decoration-line-through': todo.completed }"
               >
-                <v-list-item-action>
-                  <v-checkbox v-model="todo.completed" @change="toggleTodo(todo)" />
-                </v-list-item-action> 
-                  <v-list-item-title >
-                    {{ todo.title }}
-                  </v-list-item-title> 
-                <v-list-item-action>
-                  <v-btn icon color="red" @click="removeTodo(todo)">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
+                <v-row class="d-flex align-center">
+                  
+                  <v-list-item-action>
+                      <!--checkbox-->
+                  <v-col cols="auto">
+                      <v-checkbox v-model="todo.completed"  />
+                  </v-col> 
+                  <!-- Title-->
+                  <v-col>
+                    <v-list-item-title :class="{'text-decoration-line-through':todo.completed}" >
+                      {{ todo.title }}
+                    </v-list-item-title>
+                  </v-col> 
                 </v-list-item-action>
+                  <!-- Delete Button-->
+                  <v-col cols="auto">
+                    <!-- <v-list-item-action> -->
+                    <v-btn icon color="red" @click="removeTodo(todo)">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  <!-- </v-list-item-action> -->
+                  </v-col>
+                </v-row>
               </v-list-item>
             </v-list>
           <!-- Footer -->
@@ -449,10 +475,7 @@ return {
 
 .todo-item {
   margin-bottom: 10px;
-}
-.text-decoration-line-through {
-  text-decoration: line-through;
-}
+} 
 
 </style>
 
