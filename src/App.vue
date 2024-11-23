@@ -1,6 +1,7 @@
 <script>
 import { ref, reactive, computed, watchEffect, onMounted } from 'vue';
 import { debounce } from 'vue-debounce';
+// import debounce from 'lodash/debounce';
 import { shuffle as _shuffle } from 'lodash-es';
 import { marked } from 'marked';
 import DemoGrid from './Grid.vue';
@@ -328,7 +329,6 @@ return {
             </v-radio-group>
             <v-list>
               <v-list-item v-for="{ html_url, sha, author, commit } in commits" :key="sha || html_url">
-              <v-list-item-content>
                 <v-list-item-title>
                   <a :href="html_url" target="_blank">
                     {{  sha?.substring(0, 7) || 'N/A' }}
@@ -337,7 +337,6 @@ return {
                 <v-list-item-subtitle>
                   {{  commit?.message || 'No message' }} - {{ commit?.author?.name || 'Unknown Author' }}
                 </v-list-item-subtitle>
-              </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-card-text>
@@ -374,12 +373,10 @@ return {
               >
                 <v-list-item-action>
                   <v-checkbox v-model="todo.completed" @change="toggleTodo(todo)" />
-                </v-list-item-action>
-                <v-list-item-content>
+                </v-list-item-action> 
                   <v-list-item-title >
                     {{ todo.title }}
-                  </v-list-item-title>
-                </v-list-item-content>
+                  </v-list-item-title> 
                 <v-list-item-action>
                   <v-btn icon color="red" @click="removeTodo(todo)">
                     <v-icon>mdi-delete</v-icon>
@@ -449,6 +446,14 @@ return {
 .text-decoration-line-through {
   text-decoration: line-through;
 }
+
+.todo-item {
+  margin-bottom: 10px;
+}
+.text-decoration-line-through {
+  text-decoration: line-through;
+}
+
 </style>
 
  
