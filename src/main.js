@@ -4,6 +4,8 @@ import router from "./router/index.js"; // 라우터 설정이 있다면
 import store from "./store/store.js"; // 상태 관리 라이브러리
 
 import { createVuetify } from "vuetify";
+// import { createVuetify } from './node_modules/vuetify'; // 예시
+
 import "vuetify/styles"; // Vuetify 스타일 가져오기
 import "@mdi/font/css/materialdesignicons.css"; // 아이콘 설정
 
