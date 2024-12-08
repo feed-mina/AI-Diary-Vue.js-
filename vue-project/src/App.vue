@@ -18,8 +18,21 @@ export default{
   // data()에서 반환된 속성들은 반응적인 상태가 되어 this에 노출된다.
   data(){
     return{
-      count : 0
+      branches : ['main', 'feature'],
+      count : 0,
+      currentBranch : 'main', //초기값 설정
+      error : null, // 초기값 설정
     }
+  },
+  computed : {
+    // eslint-disable-next-line vue/no-dupe-keys
+    currentBranch(){
+      return this.branches[0]; // 첫번째 브런치를 반환
+    },
+    // eslint-disable-next-line vue/no-dupe-keys
+    error(){
+      return this.currentBranch === 'main' ? null : 'Bracnh mismatch'
+    },
   },
   // method는 속성값을 변경하고 업데이트 할 수 있는 함수, 템플릿 내에서 이벤트 헨들러로 바인딩 될 수 있음
   methods:{
@@ -30,8 +43,7 @@ export default{
   // 셍명주기 훅은 컴포넌트 생명주기의 여러단계에서 호출딘다. 이 함수는 컴포넌트가 마운트 된 후 호출된다.
   mounted(){
     console.log(`숫자 세기의 초기값은 ${this.count} 이다`)
-  },
-
+  }, 
   components :{
     ComponentA,
     ComponentB,
@@ -196,7 +208,7 @@ const filteredTodos = computed(() => {
     });
 
 const todoSample = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
-const editedTodo = ref();
+ 
 
 const filteredTodoSample = computed(() => filters[visibility.value](todoSample.value));
 const remainingSample = computed(() => filters.active(todoSample.value).length);
@@ -226,10 +238,7 @@ const addTodo = () => {
       newTodo.value = '';
 };
 
-}
-const removeTodoSample = (todo) => {
-  todos.value.splice(todoSample.value.indexOf(todo), 1);
-};
+} 
 const setVisibility = (newVisibility) => {
   visibility.value = newVisibility;
 };
@@ -243,25 +252,7 @@ const removeCompleted = () =>{
 };
  
 const remaining = computed(() => todos.value.filter((todo) => !todo.completed).length);
-
-const editTodo = (todo) => {
-  beforeEditCache = todo.title;
-  editedTodo.value = todo;
-};
-
-const cancelEdit = (todo) => {
-  editedTodo.value = null;
-  todo.title = beforeEditCache;
-};
-
-const doneEdit = (todo) => {
-  if (editedTodo.value) {
-    editedTodo.value = null;
-    todo.title = todo.title.trim();
-    if (!todo.title) removeTodo(todo);
-  }
-}; 
-
+ 
 onMounted(() => {
   window.addEventListener('hashchange', () => {
     currentPath.value = window.location.hash;
@@ -270,19 +261,21 @@ onMounted(() => {
 
 return {
   multiSelected,
-      list, groceryList, text, checked, checkedNames,checkboxItems, picked, selected, currentView, showModal,  msg, todos, insert, reset, shuffle, toggleTodo,  remove, filteredTodoSample, visibility, setVisibility, remaining, removeCompleted, remainingSample, toggleAll,branches, commits, newTodo, addTodo,removeTodo, filteredTodos, editTodo, show, reverseMessage, notify, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update,show
+      list, groceryList, text, checked, checkedNames,checkboxItems, picked, selected, currentView, showModal,  msg, todos, insert, reset, shuffle, toggleTodo,  remove, filteredTodoSample, visibility, setVisibility, remaining, removeCompleted, remainingSample, toggleAll, commits, newTodo, addTodo,removeTodo, filteredTodos,   show, reverseMessage, notify, toggleRed, toggleColor, truncate, formatDate, searchQuery, gridColumns, gridData, treeData, output, update 
     };
 }, 
 }
 </script>  
 
 <template>
-  <header>
+  
+  <v-app>
+    <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
   <button @click="increment">숫자 세기: {{ count }}</button>
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -292,8 +285,7 @@ return {
   </header>
 
   <RouterView />
-  
-  <v-app> 
+   
   <v-container>
     <v-row>
     <!--컴포넌트와 스토어-->
