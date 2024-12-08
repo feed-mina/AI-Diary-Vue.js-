@@ -26,11 +26,11 @@ export default{
   },
   computed : {
     // eslint-disable-next-line vue/no-dupe-keys
-    currentBranch(){
+    currentBranchComputed(){
       return this.branches[0]; // 첫번째 브런치를 반환
     },
     // eslint-disable-next-line vue/no-dupe-keys
-    error(){
+    errorComputed(){
       return this.currentBranch === 'main' ? null : 'Bracnh mismatch'
     },
   },
@@ -329,16 +329,26 @@ return {
                 :value="name"
                 v-model="checkedNames"/>
             </div>
-            <!-- 라디오 버튼 -->
+          </v-card-text>
+      </v-card>
+<!-- 라디오 버튼 -->
+      <v-card outlined>
+          <v-card-text>
             <v-radio-group v-model="picked">
               <v-radio label="One" value="One" />
               <v-radio label="Two" value="Two" />
             </v-radio-group>
-            <!-- 단일 선택 드롭다운 -->
-            <v-select v-model="selected" :items="['A','B','C']" label="셀렉트 박스" outlined/>
-            <v-select v-model="multiSelected" :items="['A','B','C']" label="Multi Select" multiple outlined/>
-          </v-card-text>
+        </v-card-text>
       </v-card>
+     
+<!-- 단일 선택 드롭다운 -->
+      <v-card outlined>
+        <v-card-text>
+          <v-select v-model="selected" :items="['A','B','C']" label="셀렉트 박스" outlined/>
+            <v-select v-model="multiSelected" :items="['A','B','C']" label="Multi Select" multiple outlined/>
+         </v-card-text>
+      </v-card>
+     
     </v-col>
   </v-row>
   <!--데이터가져오기-->
@@ -461,7 +471,7 @@ return {
         </v-card>
       </v-col>
     </v-row>
-</v-container> 
+    </v-container> 
     </v-app>
 </template>
 
