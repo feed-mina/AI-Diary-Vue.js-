@@ -7,6 +7,9 @@ import ComponentA from '@/components/ComponentA.vue';
 import ComponentB from '@/components/ComponentB.vue';
 import ComponentC from '@/components/ComponentC.vue';
 
+import DiaryHeader from "@/components/Header.vue";
+import DiaryNav from "@/components/DiaryNav.vue";
+import DiaryFooter from "@/components/Footer.vue"
 export default {
   components: {
     Home,
@@ -15,6 +18,9 @@ export default {
     ComponentA,
     ComponentB,
     ComponentC,
+    DiaryHeader,
+    DiaryNav,
+    DiaryFooter,
   },
   setup() {
     // 라우터 튜토리얼
@@ -41,16 +47,19 @@ export default {
 
 <template>
   <v-app>
+
     <header>
       <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-        <RouterLink to="/notFound">잘못된 링크</RouterLink>
-      </nav>
+      
     </header>
 
+    <DiaryHeader/>
+    <DiaryNav/>
     <RouterView /> <!-- 현재 경로에 맞는 컴포넌트 렌더링 -->
+  
+    <DiaryFooter />
+
+  
   </v-app>
 </template>
  

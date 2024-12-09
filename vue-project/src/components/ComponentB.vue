@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>ComponentB</h1>
     <p>Message from Store: {{ message }}</p>
     <button @click="updateMessageFromB">Update Message</button>
   </div>
