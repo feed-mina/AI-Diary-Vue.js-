@@ -12,12 +12,6 @@ import DiaryNav from "@/components/DiaryNav.vue";
 import DiaryFooter from "@/components/Footer.vue"
 export default {
   components: {
-    Home,
-    About,
-    NotFound,
-    ComponentA,
-    ComponentB,
-    ComponentC,
     DiaryHeader,
     DiaryNav,
     DiaryFooter,
@@ -43,85 +37,74 @@ export default {
     };
   },
 };
+ 
+
 </script>
 
 <template>
   <v-app>
-
-    <header>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-      
-    </header>
-
-    <DiaryHeader/>
-    <DiaryNav/>
-    <RouterView /> <!-- 현재 경로에 맞는 컴포넌트 렌더링 -->
-  
-    <DiaryFooter />
-
-  
+    <div class="main-wrap">
+      <div class="page-wrap">
+        <DiaryNav/> <!--왼쪽 고정 네비게이션-->
+        <div class="content-wrap">
+          <header>
+            <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+          </header>
+          <DiaryHeader/>
+          <RouterView /> <!-- 현재 경로에 맞는 컴포넌트 렌더링 -->
+          <DiaryFooter />
+        </div>
+      </div>
+    </div>
   </v-app>
 </template>
  
 <style> 
-
-.vIFandVForSection,
-.PropsEXSection,
-.formSection,
-.componentSection,
-.modalSection,
-.treeSection,
-.fliterSection,
-.listSection,
-.todoSection{	
-    border-radius: 15px;
-    border-bottom: 3px solid darkgray;
-    width: 100%;
-    margin-bottom: 1em;
-    padding: 20px 10px;
+.page-wrap {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
 }
 
+.main-wrap{
+ display: flex; 
+  width: 100vw;
+  height: 100vh;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+.content-wrap {
+  flex: 1; /* 남은 공간을 본문이 차지 */
+  padding: 20px; /* 본문에 여백 추가 */
+  overflow-y: auto; /* 스크롤 가능 */
+}
+
+.DiaryNav {
+  width: 20%; /* 네비게이션의 너비 */
+  height: 100%;
+  background-color: #f4f4f4; /* 배경색 */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
 
 .text-decoration-line-through {
   text-decoration: line-through;
-}
-
-.todo-item {
-  margin-bottom: 10px;
-} 
+}  
 header {
+  width:100%;
+  /**
   line-height: 1.5;
-  max-height: 100vh;
+  max-height: 100vh; */
 }
+footer{
+  width:100%;
+  margin-top: auto;
 
+}
 .logo {
   display: block;
   margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
 }
 
 @media (min-width: 1024px) {
@@ -141,13 +124,18 @@ nav a:first-of-type {
     flex-wrap: wrap;
   }
 
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
+  .content-wrap {
+  flex: 1; /* 남은 공간을 본문이 차지 */
+  padding: 20px; /* 본문에 여백 추가 */
+  overflow-y: auto; /* 스크롤 가능 */
+}
 
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.DiaryNav {
+  width: 250px; /* 네비게이션의 너비 */
+  height: 100%;
+  background-color: #f4f4f4; /* 배경색 */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+}
+ 
 }
 </style>

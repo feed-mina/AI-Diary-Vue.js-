@@ -1,6 +1,6 @@
 <template>
     <header class="header">
-      <h1>AI 일기장</h1>
+      <h1>AI 일기장</h1> 
     </header>
   </template>
   

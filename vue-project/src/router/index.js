@@ -45,7 +45,7 @@ const routes = [
     component: ComponentC,
   },
    { 
-    path: "/tutorial",
+    path: "/diary/tutorial",
     name: "Tutorial", 
     component:Tutorial 
   },
@@ -58,20 +58,20 @@ const routes = [
     component:SignUp 
   },
   {
-     path: "/kakaoLogin", 
+     path: "/oauth/kakao/callback", 
     name: "KakaoLogin", 
     component:KakaoLogin 
   },
   { 
-    path: "/loginNew", 
+    path: "/login", 
     name: "LoginNew", 
     component:LoginNew 
   },
-  { path: "/diaryView", 
+  { path: "/diary/list", 
     name: "DiaryView", 
     component:DiaryView 
   },
-  { path: "/diaryWriting", 
+  { path: "/diary/write", 
     name: "DiaryWriting", 
     component:DiaryWriting 
   },

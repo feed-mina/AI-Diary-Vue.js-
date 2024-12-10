@@ -1,18 +1,128 @@
 <script>
+import {ref, onMounted} from "vue";
+import {useRouter} from "vue-router";
+import Cookies from "universal-cookie";
 export default {
-  name: 'HomePage',  
+  name: 'HomePage',
+  setup(){
+    
+    const router = useRouter();
+    const cookies = new Cookies(); // 쿠키 객체 생성
+    // 쿠키 읽기(디버깅 용도)
+    onMounted(()=>{
+      console.log(cookies.getAll());
+    });
+
+    const navigateTo = (path) =>{
+      router.push(path);
+    };
+
+    return{
+      navigateTo,
+    }
+  }  
 };
 </script>
 
 <template>
+  <div class="home">
+    <div class="dali_Home">
+      <!--Bubble Section-->
+      <div id="HomeBubble" class="home-bubble">
+        <div id="HomeText" class="home-text">
+          <span>
+            <strong>
+              ai이미지 생성 기능을 이용한
+            </strong>
+            <br/><br/>
+            감정다이어리
+          </span>
+            <button type="button" class="home-button" @click="navigateTo('/diary/tutorial')">
+              튜토리얼 보러가기
+            </button>
 
-<div class="home">
-  <h1>Home</h1>
-  <h1>프로젝트 설명페이지:</h1> <br>
-    <main>
-      <h2>Welcome to AI Diary</h2>
-      <p>This is a simple example of a Vue.js diary application.</p>
-    </main>
-</div>
+            
+            <button type="button" class="home-button" @click="navigateTo('/diary/write')">
+              일기 쓰러가기
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </template>
+
+
+
+<style scoped>
+.home{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.dali__Home {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Bubble styling */
+.home-bubble {
+  width: 50%;
+  background: #e0f7fa;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /**height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; */
+}
+
+.home-text {
+  font-size:1.5rem;
+}
+
+.home-text span {
+  font-size: 3vmin;
+}
+
+.home-button {
+  margin:10px;
+  padding:10px 20px;
+  background:#00796b;
+  color:white;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+/* Button hover effects */
+.home-button:hover { 
+  outline: 2px solid rgb(250, 250, 250);
+  border: 2px solid rgb(255, 46, 46);
+  background-color: rgb(249, 233, 233);
+  border-radius: 20px;
+  margin: 4px 0;
+  padding: 4px;
+  box-sizing: border-box;
+  transition: 0.3s;
+}
+
+/* Jingu section styling */
+.home-jingu {
+  position: absolute;
+  bottom: 10vmin;
+  right: 10vmin;
+  width: 70%;
+  height: 70%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+</style>

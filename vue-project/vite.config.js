@@ -17,4 +17,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  define: {
+    'process.env': {}, // Node.js에서 사용하는 process.env를 빈 객체로 처리
+  },
 })
