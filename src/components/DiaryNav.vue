@@ -4,20 +4,21 @@
       <nav>
         <div class="post-it-nav1">
           <button class="diary-nav1" @click="navigateTo('/')">Home</button>
-          <button class="diary-nav3" @click="navigateTo('/diary/tutorial')">Tutorial</button>
-          <button class="login-nav" @click="navigateTo('/login')">Login</button>
-         
-          <button class="signup-nav" @click="navigateTo('/signup')">SignUp</button>  
-         
+          <button class="diary-nav3" @click="navigateTo('/diary/tutorial')">튜토리얼</button>
+          <button class="login-nav" @click="navigateTo('/login')">로그인</button>
+
+          <button class="signup-nav" @click="navigateTo('/signup')">가입하기</button>
+
         </div>
-        <div class="post-it-nav2">  
-          <button class="diary-nav2" @click="navigateTo('/diary/write')">Write</button>
-          <button class="diary-nav4" @click="navigateTo('/diary/list')">View</button>
+        <div class="post-it-nav2">
+          <button class="diary-nav2" @click="navigateTo('/diary/write')">일기장쓰기</button>
+          <button class="diary-nav4" @click="navigateTo('/diary/common')">일기장리스트</button>
+          <button class="diary-nav4" @click="navigateTo('/logout')">로그아웃</button>
       </div>
     </nav>
   </div>
 </template>
-  
+
   <script>
   import.meta.env.VITE_KAKAO_OAUTH_URI
 export default {
@@ -44,7 +45,7 @@ export default {
   },
    };
   </script>
-  
+
   <style scoped>
 .nav-wrap{
   width: 30vw; /* 네비게이션 너비 */
@@ -56,7 +57,7 @@ export default {
   justify-content: flex-start; /* 내용 상단 정렬 */
   padding: 1rem;
   z-index: 10;
-} 
+}
 .post-it-nav1,
 .post-it-nav2 {
   display: flex;
@@ -64,7 +65,7 @@ export default {
   align-items: center;
   gap: 1rem; /* 버튼 간격 */
 }
- 
+
 .post-it-nav2{
   margin-top: 1rem;
 }
@@ -93,45 +94,45 @@ export default {
   transform: scale(1.05);
 }
 
-.diary-nav1{ 
+.diary-nav1{
   background: linear-gradient(145deg, #89e73e, #73c234);
   box-shadow: 5px 5px 0px #7acd37, -5px -5px 0px #86e33d;
 }
 
-.diary-nav2{ 
+.diary-nav2{
   background: linear-gradient(145deg, #fe676f, #d5565e);
 }
 
 
-.diary-nav3{ 
+.diary-nav3{
   background: linear-gradient(145deg, #c841f7, #a837d0);
   box-shadow: 5px 5px 0px #b23adb, -5px -5px 0px #c440f3;
 }
- .diary-nav4{ 
+ .diary-nav4{
   background: linear-gradient(145deg, #5897f7, #4a7fd0);
   box-shadow: 5px 5px 0px #4e86db, -5px -5px 0px #5694f3;
 }
- .diary-handle-container{ 
+ .diary-handle-container{
   background: linear-gradient(145deg, #774a20, #492a0d);
   box-shadow: 5px 5px 0px #3a2109, -5px -5px 0px #3a2109;
 }
- 
-.login-nav{ 
+
+.login-nav{
   background: #7E8C79;
   box-shadow: 5px 5px 0px #172C08;
 }
- 
+
 .kakaoLogin-nav{
   background: #FFCC49;
   box-shadow: 5px 5px 0px #B5AD68;
 }
 
- 
-.signup-nav{ 
+
+.signup-nav{
   background: #A5778F;
   box-shadow: 5px 5px 0px #4F2116;
 }
-  
+
 
   .navbar {
     background-color: #444;
@@ -152,7 +153,7 @@ export default {
   .navbar li a:hover {
     text-decoration: underline;
   }
-  
+
 
 
   .nav {
@@ -179,4 +180,3 @@ export default {
   }
 
   </style>
-   

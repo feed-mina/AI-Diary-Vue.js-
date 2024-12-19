@@ -5,17 +5,17 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 
 export default {
-  name: 'LoginPage', 
+  name: 'LoginPage',
   setup(){
     const router = useRouter();
-    const cookies = new Cookies(); 
+    const cookies = new Cookies();
 
-    const isLoginPg = ref(true);   
+    const isLoginPg = ref(true);
 
     // 로그인 입력 데이터
     const loginData = ref({
       id:"",
-      password : "", 
+      password : "",
     });
     const errorWarning = ref({
       id:  false,
@@ -23,7 +23,7 @@ export default {
     });
     const idErrorMessage = ref("");
     const passwordErrorMessage = ref("");
-    
+
     // const idValid = ref(true);
     // const passwordValid = ref(true);
     const showPassword = ref(false);
@@ -34,7 +34,6 @@ export default {
     onMounted(() => {
       const userData = cookies.get("userData");
       if(!userData){
-        console.log("로그인 필요");
         loginData.value = {
           id : "",
           password : "",
@@ -48,9 +47,10 @@ export default {
     const handleLoginData = (event) =>{
       loginData.value[event.target.name] = event.target.value;
     };
- 
 
-    const onClickLoginButton = async() => {
+
+    const handleLoginButton = async() => {
+      // const userData = cookies.get("userData");
       console.log("로그인 데이터 :", loginData.value);
       if(!loginData.value.id){
         alert("아이디를 입력해주세요.");
@@ -65,9 +65,8 @@ export default {
 
       try{
         const response = await sendLoginData();
-        cookies.set("userData",response.data, { path: "/" });
-        alert("로그인을 완료했습니다.");
-        router.push("/diary/home");
+        cookies.set("userData",response.data, { path: "/" });  // 쿠키에 로그인 데이터 저장
+        router.push("/diary/common");
       } catch(error){
         console.error(error);
         errorWarning.value = error.response?.data?.fail || "로그인에 실패했습니다.";
@@ -85,21 +84,21 @@ export default {
       .catch((error)=>{
         console.log("API 호출 실패",error);
       });
-      
+
     };
 
-    
+
 
     return{
       isLoginPg,
-      loginData, 
+      loginData,
       errorWarning,
       showPassword,
       handleLoginData,
       idErrorMessage,
       passwordErrorMessage,
       togglePasswordVisibility,
-      onClickLoginButton
+      handleLoginButton
     };
 
    },
@@ -111,8 +110,8 @@ export default {
   <div id="login_form" class="login_form">
       <!--로그인 또는 회원가입 폼 렌더링-->
           <!--로그인 폼-->
-          <form @submit.prevent="onClickLoginButton">
-   
+          <form>
+
           <!--ID-->
           <div class="login-session">
             <div class="login-label">
@@ -125,8 +124,8 @@ export default {
               </div>
             </div>
           </div>
-          
-          
+
+
         <!--패스워드-->
         <div class="login-session">
           <div class="login-label">
@@ -137,7 +136,7 @@ export default {
             <button type="button" @click="togglePasswordVisibility">
               {{  showPassword ? '숨기기' : '보기' }}
             </button>
-          <div class="login_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }"> 
+          <div class="login_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }">
             {{ passwordErrorMessage }}
         </div>
       </div>
@@ -145,14 +144,14 @@ export default {
 
       <!-- 로그인 버튼 -->
       <div>
-        <button type="submit" class="login_form_button">로그인</button>
+        <button type="button" @click="handleLoginButton" class="login_form_button">로그인</button>
       </div>
     </form>
    </div>
 </div>
 </template>
 
-<style scoped> 
+<style scoped>
 
 
 .loginPage {
@@ -182,7 +181,7 @@ export default {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-} 
+}
 
 .login_form-input{
   width: 100%; /* 필드 너비가 컨테이너에 맞춰짐 */
@@ -219,5 +218,5 @@ export default {
   color: red;
   margin-top: 0.5rem;
 }
- 
+
 </style>
