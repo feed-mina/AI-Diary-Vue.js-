@@ -84,10 +84,11 @@ export default {
 
     <h1>날짜 선택하기</h1>
     <!-- 캘린더 컴포넌트 -->
+
     <Datepicker
       v-model="diaryContent.date"
-      :format="'YYYY-MM-DD'" <!-- 날짜 형식 설정 -->
-      :auto-apply="true" <!-- 날짜 선택 시 바로 반영 -->
+      :format="'YYYY-MM-DD'"
+      :auto-apply="true"
       :locale="{ months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'] }"
     />
     <!-- 선택한 날짜 출력 -->
