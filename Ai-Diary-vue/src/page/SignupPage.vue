@@ -9,7 +9,7 @@ import Cookies from "universal-cookie";
 // import port from "@/data/port.json";
 
 export default {
-  name: 'SignupPage', 
+  name: 'SignupPage',
   setup(){
     // 쿠키 객체 생성
     const cookies = new Cookies();
@@ -48,20 +48,16 @@ export default {
 
 
     onMounted(() =>{
-      if (!cookies.get("userData")) {
-        signUpData.value = {
-          email: "",
-          password: "",
-          rePassword: "",
-          name: "",
-        };
-         router.push("/");
+      const userData = cookies.get("userData");
+      if (!userData) {
+    console.log("사용자가 로그인되어 있지 않음");
+    // router.push("/"); // 필요하지 않다면 삭제
        } else {
         router.push("/diary/common");
       }
     });
 
-    const checkId = (id) => { 
+    const checkId = (id) => {
       const idExp = /^[a-zA-Z0-9]{5,15}$/; // 정규식 검증
       idValid.value = idExp.test(id); // 정규식 검증
 
@@ -71,21 +67,22 @@ export default {
     };
 
     const checkPassword = (password) => {
-      const PaswrordExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$^&*]{8,}$/; // 최소 8자, 문자, 숫자, 특수문자 포함 
-      passwordValid.value = PaswrordExp.test(password); 
-      passwordErrorMessage.value = passwordErrorMessage.value ? "" : "비밀번호는 최소 8자 이상이며 문자, 숫자 특수문자를 포함해야 합니다." 
-        errorWarning.value.password = !passwordValid.value;     
-      } 
+      const PaswrordExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$^&*]{8,}$/; // 최소 8자, 문자, 숫자, 특수문자 포함
+      passwordValid.value = PaswrordExp.test(password);
+      passwordErrorMessage.value = passwordErrorMessage.value ? "" : "비밀번호는 최소 8자 이상이며 문자, 숫자 특수문자를 포함해야 합니다."
+        errorWarning.value.password = !passwordValid.value;
+      }
 
     const checkRePassword = (rePassword) =>{
       rePasswordValid.value = rePassword === signUpData.value.password;
       errorWarning.value.rePassword = !rePassword.value;
       passwordErrorMessage.value = rePasswordValid.value ? "" : "비밀번호가 일치하지 않습니다.";
-    }  
+      errorWarning.value.rePassword = !rePasswordValid.value;
+    }
 
     const checkName = async(name)=>{
       const regNameExp = /^[가-힣a-zA-Z\s]{2,20}$/; // 2~20자, 한글 영문 이름 허용 (띄어쑤기 포함)
-      nameValid.value = regNameExp.test(name); 
+      nameValid.value = regNameExp.test(name);
       nameErrorMessage.value = nameValid.value ? "" : "이름은 2~20자의 한글 또는 영문만 가능합니다."
         errorWarning.value.name = !nameValid.value;
       }
@@ -95,11 +92,15 @@ export default {
       /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
       if(regExp.test(email)){
         try{
-          const res  = await axios.get(`${port.url}/user/${email}/findEmail`);
-          emailErrorMessage.value="존재하지 않는 이메일입니다.";
-        }catch {
-          emailErrorMessage.value="";
-          errorWarning.value.email=false;
+          const response  = await axios.get(`http://localhost:8080/api/auth/findEmail/${email}`);
+          if(response.data.exists){
+            emailErrorMessage.value="";
+          }else{
+            emailErrorMessage.value="존재하지 않는 이메일입니다.";
+          }
+        }catch(error) {
+          console.error("API 호출 오류",error);
+          emailErrorMessage.value="이메일 확인 중 오류가 발생했씁니다.";
         }
       }else{
           emailErrorMessage.value="유효하지 않는 이메일입니다."
@@ -112,18 +113,18 @@ export default {
     }
 
     const handlePasswordChange = (event) =>{
-      checkPassword(event.target.value);       
+      checkPassword(event.target.value);
     }
     const handleEmailChange = (event) => {
       checkEmail(event.target.value);
     };
- 
+
 
     const handleRePasswordChange = (event) => {
       const rePassword = event.target.value;
       signUpData.value.rePassword  = rePassword;
       checkRePassword(rePassword);
-    } 
+    }
 
     const handleNameChange = (event) =>{
       const name = event.target.value;
@@ -131,7 +132,7 @@ export default {
       checkName(event.target.name);
     }
 
-    
+
 
     // 데이터 저장(localStorage)
     const signUpDataToSave = {
@@ -207,7 +208,7 @@ const onClickSignUpButton = async () => {
 <div class="signupPage">
   <div class="signUp_form">
     <form @submit.prevent="onClickSignUpButton">
-      
+
     <!--ID-->
     <div class="signUp-session">
       <div class="signUp-label">
@@ -221,7 +222,7 @@ const onClickSignUpButton = async () => {
       </div>
      </div>
 
-      <!-- 이메일 --> 
+      <!-- 이메일 -->
       <div class="signUp-session">
         <div class="signUp-label">
           <label for="email" class="form-label">Emaill</label>
@@ -243,7 +244,7 @@ const onClickSignUpButton = async () => {
         <button type="button" @click="togglePasswordVisibility">
           {{  showPassword ? '숨기기' : '보기' }}
         </button>
-      <div class="signUp_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }"> 
+      <div class="signUp_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }">
         {{ passwordErrorMessage }}
     </div>
   </div>
@@ -260,10 +261,10 @@ const onClickSignUpButton = async () => {
       </button>
       <div class="signUp_form-oo">
         <div v-if="errorWarning.rePassword"  :style="{ color: errorWarning.rePassword ? 'red' : 'black' }">
-          비밀번호가 일치하지 않습니다. 
+          비밀번호가 일치하지 않습니다.
           {{ passwordErrorMessage }}
         </div>
-      </div> 
+      </div>
       </div>
     </div>
     <!--이름-->
@@ -275,11 +276,11 @@ const onClickSignUpButton = async () => {
         <input size="30" type="text"   v-model="signUpData.name" @input="handleNameChange" class="signUp_form-input" name="name" id="name"/>
       <div class="signUp_form-oo">
         <div v-if="errorWarning.name"  :style="{ color: errorWarning.name ? 'red' : 'black' }">
-          
+
           {{ nameErrorMessage }}
         </div>
-      </div> 
-    
+      </div>
+
       </div>
     </div>
      <button type="button" @click="onClickSignUpButton"  class="signup_form_button">

@@ -20,4 +20,12 @@ export default defineConfig({
   define: {
     'process.env': {}, // Node.js에서 사용하는 process.env를 빈 객체로 처리
   },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // Spring Boot 서버 URL
+        changeOrigin: true,
+      },
+    },
+  },
 })

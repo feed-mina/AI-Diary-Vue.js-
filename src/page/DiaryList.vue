@@ -3,7 +3,7 @@ import {ref, onMounted} from 'vue';
 import { useRouter } from 'vue-router';
 import axios from "axios";
 import Cookies from 'universal-cookie';
-import Modal from '../../Ai-Diary-vue/src/Modal.vue';
+import Modal from '../components/Modal.vue';
 import styled from '@vue-styled-components/core';
 export default {
   name: 'DiaryList', // 다중 단어 이름으로 변경
@@ -27,7 +27,7 @@ export default {
 
     const getDiaryList = async(id, temPage) => {
       try{
-        const response = await axios.get(`localhost:8080/api/diary/getOtherList/${id}?page=${temPage}&perPage=6`,
+        const response = await axios.get(`http://localhost:8080/api/diary/getOtherList/${id}?page=${temPage}&perPage=6`,
           {
             headers : {
               accessToken : cookies.get("userData").accessToken,
@@ -91,7 +91,7 @@ return{
           <article class="mini-post">
             <header>
               <h3>
-                <a class="mini-post-title" @click="navitateTo(`/diary/${it.shortId}/diaryview`)">
+                <a class="mini-post-title" @click="navigateTo(`/diary/${it.shortId}/diaryview`)">
                   <span style="font-size: bold; color:#604e2e">
                     &nbsp; {{ it.author }} &nbsp;
                   </span>
@@ -154,7 +154,7 @@ return{
 </template>
 
 
-<style scoped>
+<style>
 .diaryOtherList_paper {
   width: 100%;
   min-width: 400px;

@@ -14,79 +14,83 @@ export default {
 
     // 로그인 입력 데이터
     const loginData = ref({
-      id:"",
+      userId:"",
       password : "",
     });
     const errorWarning = ref({
-      id:  false,
+      userId:  false,
       password:  false,
     });
     const idErrorMessage = ref("");
     const passwordErrorMessage = ref("");
-
-    // const idValid = ref(true);
-    // const passwordValid = ref(true);
     const showPassword = ref(false);
+
     const togglePasswordVisibility = () =>{
       showPassword.value = !showPassword.value;
     }
     // 로그인 상태 확인 후 리다이렉트
     onMounted(() => {
       const userData = cookies.get("userData");
-      if(!userData){
-        loginData.value = {
-          id : "",
-          password : "",
-        };
+      if(userData){
         router.push("/login");
-      }  else{
-        router.push("/diary/common");
       }
     });
 
-    const handleLoginData = (event) =>{
-      loginData.value[event.target.name] = event.target.value;
-    };
 
 
     const handleLoginButton = async() => {
       // const userData = cookies.get("userData");
       console.log("로그인 데이터 :", loginData.value);
-      if(!loginData.value.id){
+      if(!loginData.value.userId){
         alert("아이디를 입력해주세요.");
+        idErrorMessage.value ="아이디를 입력해주세요.";
         return;
       }
 
       if(!loginData.value.password){
         alert("비밀번호를 입력해주세요.");
+        idErrorMessage.value="비밀번호를 입력해주세요.";
         return;
       }
-
-
       try{
         const response = await sendLoginData();
-        cookies.set("userData",response.data, { path: "/" });  // 쿠키에 로그인 데이터 저장
-        router.push("/diary/common");
-      } catch(error){
-        console.error(error);
-        errorWarning.value = error.response?.data?.fail || "로그인에 실패했습니다.";
 
+        // 응답 데이터 확인
+        if (response && response.data) {
+          cookies.set("userData", response.data, { path: "/" }); // 쿠키에 저장
+          router.push("/diary/common"); // 성공 시 리다이렉션
+        } else {
+          console.error("로그인 응답이 올바르지 않습니다:", response);
+          alert("로그인에 실패했습니다. 다시 시도해주세요.");
+        }
+      } catch(error){
+        if (error.response?.data?.fail) {
+          console.error("로그인 실패:", error.response.data.fail);
+          alert(error.response.data.message || "로그인에 실패했습니다.");
+        } else {
+          console.error("서버 오류 발생:", error);
+          alert("서버와의 통신 중 오류가 발생했습니다.");
+        }
       }
     };
 
-
     // 로그인 API 호출
-    const sendLoginData = async() => {
-      return await axios.post("http://localhost:8080/api/auth/login", loginData.value)
-      .then((response)=>{
-        this.user = response.data;
-      })
-      .catch((error)=>{
-        console.log("API 호출 실패",error);
-      });
 
-    };
 
+// 로그인 API 호출
+const sendLoginData = async () => {
+  try {
+    const response = await axios.post("http://localhost:8080/api/auth/login", {
+    userId: loginData.value.userId,
+    password: loginData.value.password,
+  });
+    localStorage.setItem('token', response.data.token); // JWT 토큰 저장
+    alert('로그인 성공');
+  } catch (error) {
+    console.error('로그인 실패:', error.response.data);
+    alert('로그인 실패');
+  }
+};
 
 
     return{
@@ -94,7 +98,6 @@ export default {
       loginData,
       errorWarning,
       showPassword,
-      handleLoginData,
       idErrorMessage,
       passwordErrorMessage,
       togglePasswordVisibility,
@@ -115,11 +118,11 @@ export default {
           <!--ID-->
           <div class="login-session">
             <div class="login-label">
-              <label for="id" class="form-label">ID</label>
+              <label for="userId" class="form-label">ID</label>
             </div>
             <div>
-              <input size="30" type="text"  v-model="loginData.id" @input="handleIdChange" class="login_form-input" name="id" id="id"/>
-              <div class="login_form-oo" :style="{ color: errorWarning.id ? 'red' : 'black' }">
+              <input size="30" type="text"  v-model="loginData.userId" @input="handleIdChange" class="login_form-input" name="userId" id="userId"/>
+              <div class="login_form-oo" :style="{ color: errorWarning.userId ? 'red' : 'black' }">
                 {{ idErrorMessage }}
               </div>
             </div>

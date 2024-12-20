@@ -1,31 +1,85 @@
 <script>
+import { ref } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+import Cookies from 'universal-cookie';
+
 export default {
-  name: 'DiaryWriting', // 다중 단어 이름으로 변경
+  name: 'DiaryWriting',
+  setup() {
+    const router = useRouter();
+    const cookies = new Cookies();
+
+    // 반응형 상태
+    const diaryContent = ref({
+      author: '',
+      title: '',
+      tags: { tag1: '', tag2: '', tag3: '' },
+      emotion: '',
+      content: '',
+      hidden: true,
+    });
+
+    const emotionItems = [
+      { text: "😁 I feel good", value: "1" },
+      { text: "😂 Oh, That's so funny", value: "2" },
+      { text: "😫 What should I do?!", value: "3" },
+      { text: "😒 unpleasant, boring", value: "4" },
+      { text: "😤 How dare you", value: "5" },
+      { text: "😡 Angry", value: "6" },
+      { text: "🤯 I wanna get outta here...", value: "7" },
+      { text: "💖 Love", value: "8" },
+      { text: "🤕 Not in a good condition", value: "9" },
+      { text: "💙 I feel blue", value: "10" },
+    ];
+
+    // 일기 저장 버튼 핸들러
+    const handleSaveDiaryButton = async () => {
+      if (!diaryContent.value.author || !diaryContent.value.title) {
+        alert('작성자와 제목을 입력해주세요.');
+        return;
+      }
+
+      try {
+        const response = await axios.post('http://localhost:8080/api/diary', diaryContent.value);
+        alert('일기가 성공적으로 저장되었습니다!');
+        console.log('Diary saved:', response.data);
+        router.push('/diary/home');
+      } catch (error) {
+        console.error('Failed to save diary:', error);
+        alert('일기 저장에 실패했습니다. 다시 시도해주세요.');
+      }
+    };
+
+    return {
+      diaryContent,
+      emotionItems,
+      handleSaveDiaryButton,
+    };
+  },
 };
 </script>
- 
-
 <template>
   <div class="diaryWriting">
     <div class="diaryWriting_content">
       <div class="diaryTuto">
         <div class="diaryWriting_container">
           <form>
-            <div class="diaryWritingTitle">
-                <span class="diaryWritingHighlight">
-                  DiaryWriting
-                </span>
-            </div>
             <div class="diaryWriting_noDalle">
               <div class="section0">
-                <div>오늘 날짜 : 날짜 자동입력</div>
+                <div>오늘 날짜 : </div>
               </div>
               <div class="section01">
                 <div>
+                  <div>
                     <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="author" id="author" name="author" :value="author" placeholder=""  readonly :disabled="false"/>
+                  <input type="text" class="author" id="author" name="author" :value="author" placeholder="" />
+                  </div>
+                  <div>
                     <label for="title">제목&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="title" id="title" name="title" :value="title" placeholder="" readonly :disabled="false"/>
+                  <input type="text" class="title" id="title" name="title" :value="title" placeholder=""/>
+
+                  </div>
                 </div>
               </div>
               <!--section2-->
@@ -34,14 +88,11 @@ export default {
                     <span>오늘의 감정을 태그로 입력하세요.</span>
                 </div>
                 <div class="tags">
-                    <input type="text" id="tag1" name="tag1" v-model="tags.tag1" placeholder="tag1" disabled/>
-                    
-                    <input type="text" id="tag2" name="tag2" v-model="tags.tag2" placeholder="tag2" disabled/>
-                    
-                    <input type="text" id="tag3" name="tag3" v-model="tags.tag3" placeholder="tag3" disabled/>
-                  <button type="button" class="aiButton">
-                      <span>AI 이미지 생성</span>
-                  </button>
+                    <input type="text" id="tag1" name="tag1" v-model="tags.tag1" placeholder="tag1" />
+
+                    <input type="text" id="tag2" name="tag2" v-model="tags.tag2" placeholder="tag2" />
+
+                    <input type="text" id="tag3" name="tag3" v-model="tags.tag3" placeholder="tag3" />
                 </div>
               </div>
               <!--section3-->
@@ -67,7 +118,7 @@ export default {
                 <div class="text">
                       <span>본문</span>
                 </div>
-                <textarea v-model="content" rows="3" class="content" name="content" id="content" disabled></textarea>
+                <textarea v-model="content" rows="3" class="content" name="content" id="content" ></textarea>
               </div>
               <!--section05-->
               <div class="section05">
@@ -80,15 +131,15 @@ export default {
                         보여주기
                       </option>
                     </select>
-                    <div>
-                      <button type="button" @click="saveDiary">일기장완료</button>
-                      <button type="button" @click="goDiary">뒤로가기</button>
-                    </div>
               </div>
 
               <!--diaryTuto-dalle-->
             </div>
-          </form>
+              <!-- 일기저장하기 -->
+                <div>
+                  <button type="button" @click="handleSaveDiaryButton" class="diary_form_button">저장하기</button>
+                </div>
+                </form>
         </div>
       </div>
     </div>
@@ -104,18 +155,18 @@ export default {
     border-radius: 0.625em;
     overflow: hidden;
 }
-  
-.diaryWriting_content {			
+
+.diaryWriting_content {
     height: 100%;
     width: 99%;
     top: 1.875em;
     right: 0;
     bottom: 33.75em;
     left: 3.75em;
-    background-size: 30px 30px;  
+    background-size: 30px 30px;
   }
-  
-  .diaryTuto {	
+
+  .diaryTuto {
     padding: 1.875em;
     padding-top: 1.5em;
     width: 100%;
@@ -123,7 +174,7 @@ export default {
     z-index: 9999;
     font-size: 2vmin;
   }
-  
+
   .diaryTuto input,
   textarea,
   button {
@@ -132,7 +183,7 @@ export default {
     border: 0 solid black;
     font-size: 0.9375em;
   }
-  .diaryWriting_container {		
+  .diaryWriting_container {
     /* border: 1px solid #00fa9a; */
     margin: 0;
     width: 100%;
@@ -141,22 +192,22 @@ export default {
     flex-direction: row;
   }
 
-  .diaryWritingTitle {		
+  .diaryWritingTitle {
     font-size: 2rem;
     text-align: center;
     font-weight: bold;
-    
+
   }
-  .diaryWritingTitle {		
+  .diaryWritingTitle {
     box-shadow: inset 0 -23px 0 #e89b3d;
     display: inline;
   }
-  
+
   .diaryWriting_container form {
     width: 100%;
     height: 100%;
   }
-  .diaryWriting_noDalle {		
+  .diaryWriting_noDalle {
     width: 65%;
     height: 100%;
     margin: 0em;
@@ -173,9 +224,9 @@ export default {
     outline: 2px solid #c1ab86;
     transition: 0.1s;
   }
-  
-  
-  .diaryWriting_noDalle .section0 { 
+
+
+  .diaryWriting_noDalle .section0 {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -188,19 +239,19 @@ export default {
     flex-direction: row;
     margin-bottom: 0.9375em;
   }
-  
+
   .diaryWriting_noDalle .section01 input {
     width: 40%;
     text-align: center;
   }
-  
+
  .diaryWriting_noDalle .section1 input:hover {
     transition: 0.3s;
     opacity: 1;
     outline: 2px solid #c1ab86;
     width: 42%;
   }
-  
+
  .diaryWriting_noDalle .section2 {
     width: 100%;
     margin-bottom: 0.625em;
@@ -254,7 +305,7 @@ export default {
     width: 35%;
     height: 2.5em;
   }
- 
+
  .diaryWriting_noDalle .section3 .selectBox .v-select {
     background: transparent;
     outline: 0 none;
@@ -280,16 +331,16 @@ export default {
     justify-content: center;
     align-items: center;
   }
-  
+
  .diaryWriting_noDalle .section3 .selectBox .icoArrow img {
     width: 50%;
     transition: 0.3s;
   }
-  
+
  .diaryWriting_noDalle .section3 .selectBox .v-select:focus + .icoArrow img {
     transform: rotate(180deg);
   }
-  
+
  .diaryWriting_noDalle .section4 {
     display: flex;
     flex-direction: column;
@@ -312,7 +363,7 @@ export default {
  .diaryWriting_noDalle .section4 textarea:focus {
     outline: 2px solid #c1ab86;
   }
-  
+
  .diaryWriting_noDalle .section5 {
     width: 95%;
     display: flex;
@@ -323,7 +374,7 @@ export default {
  .diaryWriting_noDalle .section5 .text {
     margin-bottom: 0.625em;
   }
-  
+
  .diaryWriting_noDalle .section5 select {
     width: 35%;
     height: 2.5em;
@@ -334,13 +385,13 @@ export default {
     text-align: center;
     margin-right: 0.3125em;
   }
-  
+
  .diaryWriting_noDalle .section5 button {
     width: 35%;
     margin-right: 0.3125em;
     text-align: center;
   }
-  
+
  .diaryWriting_noDalle .section5 button:hover {
     width: 40%;
     opacity: 1;
@@ -348,5 +399,21 @@ export default {
     color: white;
     transition: 0.3s;
   }
-   
+
+  .diary_form_button{
+  width: 100%; /* 버튼이 컨테이너에 맞춰짐 */
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.diary_form_button:hover{
+  background-color: #357abd;
+
+}
 </style>
