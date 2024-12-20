@@ -2,19 +2,30 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import Cookies from 'universal-cookie';
-
+import Datepicker from '@vuepic/vue-datepicker'; // 캘린더 라이브러리를 가져옵니다.
+import '@vuepic/vue-datepicker/dist/main.css'; // 캘린더 스타일을 추가합니다.
 export default {
   name: 'DiaryWriting',
+  components: {
+    Datepicker, // 캘린더 컴포넌트를 등록합니다.
+  },
   setup() {
     const router = useRouter();
-    const cookies = new Cookies();
 
+    const selectedDate = ref(''); // 선택된 날짜를 저장할 변수입니다.
+
+
+    // 날짜가 선택되었을 때 호출되는 함수
+    const handleDateChange = (date) => {
+      selectedDate.value = date; // 선택한 날짜를 저장합니다.
+      diaryContent.value.date = date; // 선택된 날짜를 diaryContent.date에 저장
+    };
     // 반응형 상태
     const diaryContent = ref({
+      date : '',
       author: '',
       title: '',
-      tags: { tag1: '', tag2: '', tag3: '' },
+      tags: { tag1: '', tag2: '', tag3: '' }, // 초기화된 tags
       emotion: '',
       content: '',
       hidden: true,
@@ -52,6 +63,8 @@ export default {
     };
 
     return {
+      selectedDate,
+      handleDateChange,
       diaryContent,
       emotionItems,
       handleSaveDiaryButton,
@@ -67,17 +80,31 @@ export default {
           <form>
             <div class="diaryWriting_noDalle">
               <div class="section0">
-                <div>오늘 날짜 : </div>
+                <div>
+
+    <h1>날짜 선택하기</h1>
+    <!-- 캘린더 컴포넌트 -->
+    <Datepicker
+      v-model="diaryContent.date"
+      :format="'YYYY-MM-DD'" <!-- 날짜 형식 설정 -->
+      :auto-apply="true" <!-- 날짜 선택 시 바로 반영 -->
+      :locale="{ months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'] }"
+    />
+    <!-- 선택한 날짜 출력 -->
+    <div v-if="diaryContent.date" class="selected-date">
+      선택된 날짜: {{ diaryContent.date }}
+    </div>
+  </div>
               </div>
               <div class="section01">
                 <div>
                   <div>
                     <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="author" id="author" name="author" :value="author" placeholder="" />
+                  <input type="text" class="author" id="author" name="author" v-model="diaryContent.author"  placeholder="" />
                   </div>
-                  <div>
+                  <div class="titleSc">
                     <label for="title">제목&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="title" id="title" name="title" :value="title" placeholder=""/>
+                  <input type="text" class="title" id="title" name="title" v-model="diaryContent.title"  placeholder=""/>
 
                   </div>
                 </div>
@@ -88,11 +115,10 @@ export default {
                     <span>오늘의 감정을 태그로 입력하세요.</span>
                 </div>
                 <div class="tags">
-                    <input type="text" id="tag1" name="tag1" v-model="tags.tag1" placeholder="tag1" />
+                  <input type="text" id="tag1" name="tag1" v-model="diaryContent.tags.tag1" placeholder="tag1" />
+<input type="text" id="tag2" name="tag2" v-model="diaryContent.tags.tag2" placeholder="tag2" />
+<input type="text" id="tag3" name="tag3" v-model="diaryContent.tags.tag3" placeholder="tag3" />
 
-                    <input type="text" id="tag2" name="tag2" v-model="tags.tag2" placeholder="tag2" />
-
-                    <input type="text" id="tag3" name="tag3" v-model="tags.tag3" placeholder="tag3" />
                 </div>
               </div>
               <!--section3-->
@@ -102,7 +128,7 @@ export default {
                 </div>
                 <div class="selectBox">
                   <v-select
-                  v-model="emotion"
+                  v-model="diaryContent.emotion"
                   :items="emotionItems"
                   item-title="text"
                   item-value="value"
@@ -118,18 +144,14 @@ export default {
                 <div class="text">
                       <span>본문</span>
                 </div>
-                <textarea v-model="content" rows="3" class="content" name="content" id="content" ></textarea>
+                <textarea v-model="diaryContent.content" rows="3" class="content" name="content" id="content" ></textarea>
               </div>
               <!--section05-->
               <div class="section05">
                       <span>🔎</span>
-                    <select v-model="hidden" id="hidden" required>
-                      <option value="true">
-                        숨기기
-                      </option>
-                      <option value="false">
-                        보여주기
-                      </option>
+                    <select v-model="diaryContent.hidden">
+          <option :value="true">숨기기</option>
+          <option :value="false">보이기</option>
                     </select>
               </div>
 
@@ -158,7 +180,7 @@ export default {
 
 .diaryWriting_content {
     height: 100%;
-    width: 99%;
+    height: 75%;
     top: 1.875em;
     right: 0;
     bottom: 33.75em;
@@ -167,7 +189,6 @@ export default {
   }
 
   .diaryTuto {
-    padding: 1.875em;
     padding-top: 1.5em;
     width: 100%;
     height: 100%;
@@ -189,9 +210,11 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: row;
   }
 
+  .titleSc{
+    padding-top:2rem;
+  }
   .diaryWritingTitle {
     font-size: 2rem;
     text-align: center;
@@ -405,7 +428,6 @@ export default {
   background-color: #4a90e2;
   color: white;
   border: none;
-  padding: 0.8rem 1.5rem;
   border-radius: 5px;
   font-size: 1rem;
   cursor: pointer;
