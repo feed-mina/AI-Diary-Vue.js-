@@ -8,14 +8,14 @@ export default {
   name: 'Tutorial',
   data(){
     return{
-      author : "user123",
-      title : "",
+      author : "작성자",
+      title : "제목",
       tags: {
-        tag1 : "",
-        tag2 : "",
-        tag3 : "",
+        tag1 : "#태그1",
+        tag2 : "#태그2",
+        tag3 : "#태그3",
       },
-      emotion : "",
+      emotion : "1",
       emotionItems: [
         { text: "😁 I feel good", value: "1" },
         { text: "😂 Oh, That's so funny", value: "2" },
@@ -28,7 +28,7 @@ export default {
         { text: "🤕 Not in a good condition", value: "9" },
         { text: "💙 I feel blue", value: "10" }
       ],
-      content : "" ,
+      content : "오늘 하루 동안 어떤 감정이 들었는지 적어주세요." ,
       hidden : true
     };
   },
