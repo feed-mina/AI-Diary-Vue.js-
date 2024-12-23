@@ -37,6 +37,7 @@ export default {
     const passwordValid = ref(true);
     const rePasswordValid = ref(true);
     const nameValid = ref(true);
+    const emailValid = ref(true);
     const showPassword = ref(false);
     const showRePassword = ref(false);
     const togglePasswordVisibility = () =>{
@@ -49,15 +50,14 @@ export default {
     // 컴포넌트가 로드될 때 오늘 날짜 자동 설정
     onMounted(() =>{
       const userData = cookies.get("userData");
+      console.log('cookies.get("userData',cookies.get("userData"));
       if (!userData) {
     console.log("사용자가 로그인되어 있지 않음");
     // router.push("/"); // 필요하지 않다면 삭제
        } else {
         router.push("/diary/common");
       }
-      setTodayDate();
-      console.log(setTodayDate());
-    });
+       });
 
     const checkId = (id) => {
       const idExp = /^[a-zA-Z0-9]{5,15}$/; // 정규식 검증
@@ -90,29 +90,13 @@ export default {
       }
 
     const checkEmail = async (email) => {
-      const regExp =
+      const regEmailExp =
       /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-      if(regExp.test(email)){
-        try{
-          const response  = await axios.get(`http://localhost:8080/api/auth/findEmail/${email}`);
-          if(response.data.exists){
-            emailErrorMessage.value="";
-          }else{
-            emailErrorMessage.value="존재하지 않는 이메일입니다.";
-          }
-        }catch(error) {
-          console.error("API 호출 오류",error);
-          emailErrorMessage.value="이메일 확인 중 오류가 발생했씁니다.";
-        }
-      }else{
-          emailErrorMessage.value="유효하지 않는 이메일입니다."
-        }
+      emailValid.value = regEmailExp.test(email);
+      emailErrorMessage.value = emailValid.value ? "유효하지 않는 이메일형식입니다." : ""
+      errorWarning.value.name = !emailValid.value;
     }
-
-    // 오늘 날짜를 설정
-    const setTodayDate = () => {
-      diaryContentData.value.date = dayjs().format("YYYY-MM-DD"); // 현재 날짜 설정
-    };
+ 
 
 
     const handleIdChange = (event) =>{
@@ -195,7 +179,6 @@ const onClickSignUpButton = async () => {
       rePasswordValid,
       showPassword,
       showRePassword,
-      setTodayDate,
       togglePasswordVisibility,
       toggleRePasswordVisibility,
       handleIdChange,

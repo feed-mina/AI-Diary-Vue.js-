@@ -62,16 +62,16 @@ export default {
             </div>
             <div class="diaryWriting_noDalle">
               <div class="section0">
-                <div><span>오늘 날짜</span>
+                <div><span>일기 날짜</span>
                   <div>
                     <Datepicker
                     v-model="diaryContent.date"
-                    :format="'YYYY-MM-DD'"
+                    :format="'yyyy-MM-dd'"
                     :auto-apply="true"
                     :locale="'ko'"
                   />
 
-                <div v-if="diaryContent.date">선택된 날짜: {{ diaryContent.date }}</div>
+                <!-- <div v-if="diaryContent.date">선택된 날짜: {{ diaryContent.date }}</div> -->
 
                   </div>
                 </div>
