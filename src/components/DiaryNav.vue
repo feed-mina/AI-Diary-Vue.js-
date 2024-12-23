@@ -49,8 +49,8 @@ setup(){
 
         </div>
         <div class="post-it-nav2">
-          <button class="diary-nav2" @click="navigateTo('/diary/write')">일기쓰기</button>
-          <button class="diary-nav4" @click="navigateTo('/diary/common')">일기장보기</button>
+          <button class="diary-nav2" v-if="isLoggedIn" @click="navigateTo('/diary/write')">일기쓰기</button>
+          <button class="diary-nav4" v-if="isLoggedIn" @click="navigateTo('/diary/common')">일기장보기</button>
         </div>
     </nav>
   </div>
