@@ -14,11 +14,19 @@ export default {
     // 쿠키 객체 생성
     const cookies = new Cookies();
     const signUpData =  ref({
+      emailPrefix:"",
+      emailDomain:"",
+      customDomain:"",
       userId:"",
       password:"",
       rePassword:"",
       email:"",
       name:"",
+      phone:{
+        first:"",
+        middle:"",
+        last:"",
+      }
     });
 
     const errorWarning = ref({
@@ -27,17 +35,21 @@ export default {
       rePassword:  false,
       email : false,
       name:  false,
+      phone: false,
     });
     const emailErrorMessage = ref("");
     const idErrorMessage = ref("");
     const passwordErrorMessage = ref("");
     const nameErrorMessage = ref("");
+    const phoneErrorMessage = ref("");
 
     const idValid = ref(true);
     const passwordValid = ref(true);
     const rePasswordValid = ref(true);
     const nameValid = ref(true);
     const emailValid = ref(true);
+    const phoneValid = ref(true);
+
     const showPassword = ref(false);
     const showRePassword = ref(false);
     const togglePasswordVisibility = () =>{
@@ -71,7 +83,7 @@ export default {
     const checkPassword = (password) => {
       const PaswrordExp = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$^&*]{8,}$/; // 최소 8자, 문자, 숫자, 특수문자 포함
       passwordValid.value = PaswrordExp.test(password);
-      passwordErrorMessage.value = passwordErrorMessage.value ? "" : "비밀번호는 최소 8자 이상이며 문자, 숫자 특수문자를 포함해야 합니다."
+      passwordErrorMessage.value = passwordErrorMessage.value ? "" : "비밀번호는 영어, 숫자, 특수문자를 포함하여 8 자리 이상으로 설정해 주세요."
         errorWarning.value.password = !passwordValid.value;
       }
 
@@ -90,15 +102,42 @@ export default {
       }
 
     const checkEmail = async (email) => {
+      let fullEmail = "";
+      if(signUpData.value.emailDomain === "custom"){
+        fullEmail = `${signUpData.value.emailPrefix}@${signUpData.value.customDomain}`;
+      } else{
+        fullEmail = `${signUpData.value.emailPrefix}@${signUpData.value.emailDomain}`;
+      }
       const regEmailExp =
       /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/;
-      emailValid.value = regEmailExp.test(email);
-      emailErrorMessage.value = emailValid.value ? "유효하지 않는 이메일형식입니다." : ""
+      emailValid.value = regEmailExp.test(fullEmail);
+
+      if(!emailValid.value){
+        emailErrorMessage.value = "유효하지 않는 이메일형식입니다.";
+      }else{
+        emailValid.value = "";
+      }
       errorWarning.value.name = !emailValid.value;
+      signUpData.value.email = fullEmail;
     }
- 
 
-
+     
+    const validatePhone = () => {
+      const { first, middle, last } = signUpData.value.phone;
+      if (first.length === 3 && middle.length === 4 && last.length === 4) {
+        phoneValid.value = true;
+        phoneErrorMessage.value = "";
+      } else {
+        phoneValid.value = false;
+        phoneErrorMessage.value = "휴대폰 번호를 정확히 입력해주세요.";
+      }
+      errorWarning.value.phone = !phoneValid.value;
+    };
+    const handlePhoneInput = (field) => {
+      // 숫자만 입력 가능하도록 필터링
+      signUpData.value.phone[field] = signUpData.value.phone[field].replace(/[^0-9]/g, "");
+      validatePhone();
+    };
     const handleIdChange = (event) =>{
       checkId(event.target.value);
     }
@@ -106,8 +145,8 @@ export default {
     const handlePasswordChange = (event) =>{
       checkPassword(event.target.value);
     }
-    const handleEmailChange = (event) => {
-      checkEmail(event.target.value);
+    const handleEmailChange = () => {
+      checkEmail();
     };
 
 
@@ -187,7 +226,9 @@ const onClickSignUpButton = async () => {
       handleRePasswordChange,
       handleNameChange,
       onClickSignUpButton,
-      sendSignUpData
+      sendSignUpData, 
+      phoneErrorMessage,
+      handlePhoneInput
     }
 
   }
@@ -213,17 +254,34 @@ const onClickSignUpButton = async () => {
       </div>
      </div>
 
+    <!--선택박스 사용해서 이메일 종류 선택이랑 input으로 직접입력하기 기능 -->
       <!-- 이메일 -->
       <div class="signUp-session">
         <div class="signUp-label">
           <label for="email" class="form-label">Emaill</label>
         </div>
       <div>
-        <input size="30"  type="email" v-model="signUpData.email" @input="handleEmailChange" class="signUp_form-input" name="email" id="email" aria-describedby="emailHelp"/>
+      <div style="display:flex; gap: 10px; align-items: center;">
+        <!--이메일 앞부분-->
+        <input size="20"  type="text" v-model="signUpData.emailPrefix" @input="handleEmailChange" class="signUp_form-input" name="email" id="email" aria-describedby="emailHelp"/>
+        <span>@</span>
+        <!--이메일 도메인 선택-->
+        <select v-model="signUpData.emailDomain" @change="handleEmailChange" class="signUp_form-input">
+          <option value="" disabled selected>직접입력</option>
+          <option value="naver.com">naver.com</option>
+          <option value="gmail.com">gmail.com</option>
+          <option value="nate.com">nate.com</option>
+          <option value="hanmail.net">hanmail.net</option>
+          <option value="daum.net">daum.net</option>
+          <option value="custon">직접입력</option>
+        </select>
+   
+        <input size="30"  type="email" v-if="signUpData.emailDomain === 'custom'" v-model="signUpData.customDomain" @input="handleEmailChange" class="signUp_form-input" name="email" id="email" placeholder="도메인 입력" aria-describedby="emailHelp"/>
         <div class="signUp_form-oo" :style="{ color: errorWarning.email ? 'red' : 'black' }">
           {{ emailErrorMessage }}
         </div>
       </div>
+    </div>
     </div>
     <!--패스워드-->
     <div class="signUp-session">
@@ -246,7 +304,7 @@ const onClickSignUpButton = async () => {
       <label for="rePassword" class="form-label">Repassword</label>
      </div>
       <div>
-      <input size="30" :type="showRePassword ? 'text' : 'password'" v-model="signUpData.rePassword" @input="handleRePasswordChange" class="signUp_form-input" name="rePassword" id="rePassword"/>
+      <input size="30" :type="showRePassword ? 'text' : 'password'" v-model="signUpData.rePassword" @input="handleRePasswordChange" class="signUp_form-input" name="rePassword" id="rePassword" placeholder="비밀번호를 한 번 더 입력해 주세요.">
       <button type="button" @click="toggleRePasswordVisibility">
         {{  showRePassword ? '숨기기' : '보기' }}
       </button>
@@ -258,13 +316,52 @@ const onClickSignUpButton = async () => {
       </div>
       </div>
     </div>
+    <!--핸드폰 번호 3글자 +`-`+4글자  +`-`+4글자--->
+    <div class="signUp-session">
+  <div class="signUp-label">
+    <label for="phone" class="form-label">휴대전화 *</label>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <!-- 첫 번째 입력 필드 -->
+    <input
+      type="text"
+      v-model="signUpData.phone.first"
+      maxlength="3"
+      placeholder="010"
+      @input="handlePhoneInput('first')"
+      class="signUp_form-input phone-input"
+    />
+    <!-- 두 번째 입력 필드 -->
+    <input
+      type="text"
+      v-model="signUpData.phone.middle"
+      maxlength="4"
+      placeholder="1234"
+      @input="handlePhoneInput('middle')"
+      class="signUp_form-input phone-input"
+    />
+    <!-- 세 번째 입력 필드 -->
+    <input
+      type="text"
+      v-model="signUpData.phone.last"
+      maxlength="4"
+      placeholder="5678"
+      @input="handlePhoneInput('last')"
+      class="signUp_form-input phone-input"
+    />
+  </div>
+  <div class="signUp_form-oo" :style="{ color: errorWarning.phone ? 'red' : 'black' }">
+    {{ phoneErrorMessage }}
+  </div>
+</div>
+
     <!--이름-->
     <div class="signUp-session">
       <div class="signUp-label">
         <label for="name" class="form-label">Name</label>
       </div>
       <div>
-        <input size="30" type="text"   v-model="signUpData.name" @input="handleNameChange" class="signUp_form-input" name="name" id="name"/>
+        <input size="30" type="text"   v-model="signUpData.name" @input="handleNameChange" class="signUp_form-input" name="name" id="name" placeholder="이름을 입력해 주세요."/>
       <div class="signUp_form-oo">
         <div v-if="errorWarning.name"  :style="{ color: errorWarning.name ? 'red' : 'black' }">
 
@@ -274,6 +371,7 @@ const onClickSignUpButton = async () => {
 
       </div>
     </div>
+    <!-- -->
      <button type="button" @click="onClickSignUpButton"  class="signup_form_button">
       회원가입
      </button>
@@ -283,6 +381,18 @@ const onClickSignUpButton = async () => {
 </template>
 
 <style scoped>
+.phone-input {
+  width: 80px; /* 각 입력 필드 너비 */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.phone-input:focus {
+  border: 1px solid #4a90e2;
+  outline: none;
+}
 
 .temp {
   display: flex;
