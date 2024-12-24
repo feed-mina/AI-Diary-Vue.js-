@@ -14,12 +14,16 @@ setup(){
 
   // JWT 쿠키 존재 여부로 로그인 상태 확인
   const isLoggedIn = ref(!!cookies.get("jwt"));
-// 쿠키 변경 시 로그인 상태 업데이트
-const updateLoginStatus =  () => {
-  isLoggedIn.value = !!cookies.get("jwt");
-};
 
-onMounted(()=>{
+  // 로컬스토리지에 로그인할때 저장한 값
+  const LoginStorage = localStorage.getItem("userId");
+  console.log('LoginStorage: ',LoginStorage);
+// 쿠키 변경 시 로그인 상태 업데이트
+  const updateLoginStatus =  () => {
+    isLoggedIn.value = !!cookies.get("jwt");
+  };
+
+    onMounted(()=>{
       console.log('Home cookiess.getAll', cookies.getAll());
       updateLoginStatus(); // 초기 상태 설정
     });
@@ -56,6 +60,7 @@ onMounted(()=>{
     });
 
     return{
+      LoginStorage,
       isLoggedIn,
       navigateTo, 
       logout,
@@ -69,20 +74,20 @@ onMounted(()=>{
      <div class="nav-wrap">
       
       <div class="signup-button-wrap">
-          <button class="signup-nav" v-if="!isLoggedIn" @click="navigateTo('/signup')">회원가입</button>
+          <button class="signup-nav" v-if="!LoginStorage" @click="navigateTo('/signup')">회원가입</button>
        </div> 
       <nav>
         <div class="post-it-nav1">
           <button class="diary-nav1" @click="navigateTo('/')">메인페이지</button>
           <button class="diary-nav3" @click="navigateTo('/diary/tutorial')">튜토리얼</button>
-          <button class="login-nav" v-if="!isLoggedIn" @click="navigateTo('/login')">로그인</button>
+          <button class="login-nav" v-if="!LoginStorage" @click="navigateTo('/login')">로그인</button>
 
-          <button class="login-nav" v-if="isLoggedIn" @click="logout">로그아웃</button>
+          <button class="login-nav" v-if="LoginStorage" @click="logout">로그아웃</button>
 
         </div>
         <div class="post-it-nav2">
-          <button class="diary-nav2" v-if="isLoggedIn" @click="navigateTo('/diary/write')">일기쓰기</button>
-          <button class="diary-nav4" v-if="isLoggedIn" @click="navigateTo('/diary/common')">일기장보기</button>
+          <button class="diary-nav2" v-if="LoginStorage" @click="navigateTo('/diary/write')">일기쓰기</button>
+          <button class="diary-nav4" v-if="LoginStorage" @click="navigateTo('/diary/common')">일기장보기</button>
         </div>
     </nav>
   </div>

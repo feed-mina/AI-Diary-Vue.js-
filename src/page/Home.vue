@@ -10,9 +10,9 @@ export default {
     const cookies = new Cookies(); // 쿠키 객체 생성
 
     // 쿠키 변경 시 로그인 상태 업데이트
-const updateLoginStatus =  () => {
-  isLoggedIn.value = !!cookies.get("jwt");
-};
+    const updateLoginStatus =  () => {
+      isLoggedIn.value = !!cookies.get("jwt");
+    };
     onMounted(()=>{
       console.log('Home cookiess.getAll', cookies.getAll());
       updateLoginStatus(); // 초기 상태 설정

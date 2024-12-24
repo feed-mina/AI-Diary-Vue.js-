@@ -64,13 +64,13 @@ export default {
   flex-direction: row;
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
 }
 
 .main-wrap{
  display: flex; 
   width: 100vw;
-  /* height: 100vh; */
+  height: 100%;
   background-color: #ffffff;
 }
 .content-wrap {
