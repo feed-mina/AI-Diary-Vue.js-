@@ -1,7 +1,7 @@
 <script>
 import { ref } from 'vue'; // 사용하지 않는 reactive, onMounted 삭제
 
-import router from "@/router";
+import {useRouter} from "vue-router";
 import axios from "axios";
 import { onMounted } from "vue";
 import Cookies from "universal-cookie";
@@ -11,13 +11,15 @@ import Cookies from "universal-cookie";
 export default {
   name: 'SignupPage',
   setup(){
+    const router = useRouter();
     // 쿠키 객체 생성
     const cookies = new Cookies();
     const signUpData =  ref({
-      emailPrefix:"",
-      emailDomain:"",
-      customDomain:"",
-      email:"",
+      email:{
+        emailPrefix:"",
+        emailDomain:"",
+        customDomain:"",
+      },
       userId:"",
       password:"",
       rePassword:"",
@@ -113,10 +115,10 @@ export default {
         const { userId, email, password,  username, phone } = signUpData.value;
         const signUpDataToSave = {
           userId,
-          email,
+          email: `${email.emailPrefix}@${email.emailDomain === 'custom' ? email.customDomain : email.emailDomain}`,
           password,
-          username,
           phone: `${phone.first}${phone.middle}${phone.last}`,
+          username,
         };
 
         /**const signUpDataToSave = {
@@ -159,6 +161,11 @@ export default {
         return;
       }
       await sendSignUpData();
+      
+      // 로컬스토로지 signUpDataToSave 삭제
+      localStorage.removeItem('signUpDataToSave')
+      router.push("/login");
+
     };
 
     return{
@@ -202,10 +209,10 @@ export default {
       <div>
       <div style="display:flex; gap: 10px; align-items: center;">
         <!--이메일 앞부분-->
-        <input size="20"  type="text" v-model="signUpData.emailPrefix"  @input="validateField.email" class="signUp_form-input" name="emailPrefix" id="emailPrefix" aria-describedby="emailHelp"/>
+        <input size="20"  type="text" v-model="signUpData.email.emailPrefix"  @input="validateField.email" class="signUp_form-input" name="emailPrefix" id="emailPrefix" aria-describedby="emailHelp"/>
         <span>@</span>
         <!--이메일 도메인 선택-->
-        <select v-model="signUpData.emailDomain" @change="validateField.email" class="signUp_form-input">
+        <select v-model="signUpData.email.emailDomain" @change="validateField.email" class="signUp_form-input">
           <option value="" disabled selected>이메일선택</option>
           <option value="naver.com">naver.com</option>
           <option value="gmail.com">gmail.com</option>
@@ -215,7 +222,7 @@ export default {
           <option value="custon">직접입력</option>
         </select>
    
-        <input size="30"  type="text" v-if="signUpData.emailDomain === 'custom'" v-model="signUpData.customDomain" @input="validateField.email" class="signUp_form-input" name="customDomain" id="customDomain" placeholder="도메인 입력" aria-describedby="emailHelp"/>
+        <input size="30"  type="text" v-if="signUpData.email.emailDomain === 'custom'" v-model="signUpData.email.customDomain" @input="validateField.email" class="signUp_form-input" name="customDomain" id="customDomain" placeholder="도메인 입력" aria-describedby="emailHelp"/>
         <div class="signUp_form-oo" :style="{ color: errorState.email ? 'red' : 'black' }">
           {{ errorMessage.email }}
         </div>
