@@ -71,7 +71,10 @@ export default {
         cookies.set("jwt", jwtToken, { path: "/" });
         localStorage.setItem("userId", loginData.value.userId);
         alert("로그인을 완료했습니다.");
-        router.push("/diary/common");
+      router.push("/diary/common").then(() => {
+        location.reload(); // 새로고침
+      });  
+
       } catch (error) {
         // 에러 처리
         console.error("로그인 실패:", error);

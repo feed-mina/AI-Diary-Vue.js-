@@ -148,10 +148,10 @@ export default {
       const userData = cookies.get("userData");
       console.log('cookies.get("userData',cookies.get("userData"));
       if (!userData) {
-    console.log("사용자가 로그인되어 있지 않음");
+      console.log("사용자가 로그인되어 있지 않음");
     // router.push("/"); // 필요하지 않다면 삭제
        } else {
-        router.push("/diary/common");
+  //      router.push("/diary/common");
       }
        });
 
@@ -164,7 +164,9 @@ export default {
       
       // 로컬스토로지 signUpDataToSave 삭제
       localStorage.removeItem('signUpDataToSave')
-      router.push("/login");
+      router.push("/login").then(() => {
+        location.reload(); // 새로고침
+      });  
 
     };
 
@@ -219,7 +221,7 @@ export default {
           <option value="nate.com">nate.com</option>
           <option value="hanmail.net">hanmail.net</option>
           <option value="daum.net">daum.net</option>
-          <option value="custon">직접입력</option>
+          <option value="custom">직접입력</option>
         </select>
    
         <input size="30"  type="text" v-if="signUpData.email.emailDomain === 'custom'" v-model="signUpData.email.customDomain" @input="validateField.email" class="signUp_form-input" name="customDomain" id="customDomain" placeholder="도메인 입력" aria-describedby="emailHelp"/>
