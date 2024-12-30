@@ -90,7 +90,11 @@ axios.interceptors.response.use(
       alert("내용을 입력해주세요.");
       return;
     }
-
+    // 값 검증
+    if (!date || !author || !title || !emotion || !content) {
+      alert("필수 필드를 채워주세요.");
+      return;
+    }
         const diaryDataToSave = {
           pageNo: 1,
           pageSize: 10,
@@ -99,18 +103,18 @@ axios.interceptors.response.use(
           emotion,
           userId : localStorage.getItem("userId"),
           date,
-          author,
+          content,
           tag1 : tags.tag1,
           tag2 : tags.tag2,
           tag3 : tags.tag3,
-          content,
-          diaryStatus:hidden 
+          diaryStatus: hidden ? "true" : "false", // Boolean을 문자열로 변환
         }
         console.log('diaryDataToSave',diaryDataToSave);
         const jwtToken = cookies.get("jwt")?.jwt; // 쿠키에서 jwt 속성 가져오기
         console.log("jwtToken: " , jwtToken);
         if (!jwtToken) {
           alert("JWT 토큰이 없습니다. 다시 로그인해주세요.");
+          router.push("/login");
           return;
       //throw new Error("JWT 토큰이 없습니다.");
     }
@@ -127,35 +131,34 @@ axios.interceptors.response.use(
         
         console.log("jwtToken: " , jwtToken);
         console.log('response',response);
-          return response.data;
+      return response.data;
       }catch(error) {
-        
         if (error.response && error.response.status === 401) {
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
         router.push("/login"); // 로그인 페이지로 이동
       } else {
       console.error("API 호출 실패:", error);
       alert("일기 저장에 실패했습니다. 관리자에게 문의해주세요.");
+      
+      return { success: false, error: "서버 오류가 발생했습니다." }; // 실패 메시지 반환
         }
       }
     } ;
-    // 컴포넌트가 로드될 때 오늘 날짜 자동 설정
   
 
   const onClicksaveDiaryButton = async () => {
     const result =  await sendDiaryContentData();
-      try{
-        if (result && result.success) {
-      alert("일기가 저장되었습니다.");
-      // router.push("/diary/common").then(() => location.reload());
-      } else {
-        alert("저장 실패: " + (result.error || "알 수 없는 오류"));
-      }
-      } catch(error){
-        console.error(error);
-        alert("서버 요청 실패");
-
-      }
+    console.log(result)
+    alert("일기가 저장되었습니다.");
+    router.push("/componentB").then(() => location.reload());
+    if (result.success) {
+    alert("일기가 저장되었습니다.");
+    router.push("/componentA").then(() => location.reload());
+  } else if (result && result.error) {
+    alert("저장 실패: " + result.error);
+    
+    router.push("/").then(() => location.reload());
+  }
   };
     return {
       emotionItems,

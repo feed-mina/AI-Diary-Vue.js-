@@ -42,7 +42,7 @@ export default {
 
       } catch(e){
         console.error(e);
-        router.push("/");
+//        router.push("/");
       }
     };
 
