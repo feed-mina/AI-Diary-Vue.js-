@@ -1,9 +1,7 @@
 <script>
-import { ref } from 'vue'; // 사용하지 않는 reactive, onMounted 삭제
-
+import { ref, onMounted } from 'vue'; 
 import {useRouter} from "vue-router";
 import axios from "axios";
-import { onMounted } from "vue";
 import Cookies from "universal-cookie";
 
 // import port from "@/data/port.json";
@@ -120,19 +118,12 @@ export default {
           phone: `${phone.first}${phone.middle}${phone.last}`,
           username,
         };
-
-        /**const signUpDataToSave = {
-          userId: signUpData.value.userId,
-          email: `${signUpData.value.emailPrefix}+'@'+${signUpData.value.customDomain}`,
-          password : signUpData.value.password,
-          phone: `${signUpData.value.phone.first}${signUpData.value.phone.middle}${signUpData.value.phone.last}`,
-          username : signUpData.value.username,
-        }; */
+ 
         console.log("회원가입 데이터:", signUpDataToSave);
 
         const response = await axios.post("http://localhost:8080/api/auth/register", signUpDataToSave);
 
-        localStorage.setItem("signUpDataToSave", JSON.stringify(signUpDataToSave));
+        // localStorage.setItem("signUpDataToSave", JSON.stringify(signUpDataToSave));
         alert("회원가입이 완료되었습니다!");
 
         return response.data;
@@ -147,23 +138,21 @@ export default {
     onMounted(() =>{
       const userData = cookies.get("userData");
       console.log('cookies.get("userData',cookies.get("userData"));
-      if (!userData) {
+    if (!userData) {
       console.log("사용자가 로그인되어 있지 않음");
     // router.push("/"); // 필요하지 않다면 삭제
-       } else {
-  //      router.push("/diary/common");
-      }
+      } 
        });
 
-       const onClickSignUpButton = async () => {
-      if (!isSignUpDataValid()) {
+  const onClickSignUpButton = async () => {
+    if (!isSignUpDataValid()) {
         alert("빠진 정보 없이 입력해 주세요.");
         return;
       }
       await sendSignUpData();
       
       // 로컬스토로지 signUpDataToSave 삭제
-      localStorage.removeItem('signUpDataToSave')
+      //localStorage.removeItem('signUpDataToSave')
       router.push("/login").then(() => {
         location.reload(); // 새로고침
       });  
