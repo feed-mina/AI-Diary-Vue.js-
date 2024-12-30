@@ -67,17 +67,42 @@ axios.interceptors.response.use(
 
     const sendDiaryContentData = async()=>{
       try{
-        const { date, author, tags, emotion, content, hidden} = diaryContentData.value; 
+        const { title, date, author, tags, emotion, content, hidden} = diaryContentData.value; 
+        
+            // 값 검증
+    if (!date) {
+      alert("날짜를 입력해주세요.");
+      return;
+    }
+    if (!author) {
+      alert("작성자를 입력해주세요.");
+      return;
+    }
+    if (!title) {
+      alert("제목을 입력해주세요.");
+      return;
+    }
+    if (!emotion) {
+      alert("감정지수를 선택해주세요.");
+      return;
+    }
+    if (!content) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
         const diaryDataToSave = {
-                      pageNo: 1,
-            pageSize: 10,
+          pageNo: 1,
+          pageSize: 10,
+          title,
+          author,
+          emotion,
           userId : localStorage.getItem("userId"),
           date,
           author,
           tag1 : tags.tag1,
           tag2 : tags.tag2,
           tag3 : tags.tag3,
-          emotion,
           content,
           diaryStatus:hidden 
         }
@@ -85,7 +110,9 @@ axios.interceptors.response.use(
         const jwtToken = cookies.get("jwt")?.jwt; // 쿠키에서 jwt 속성 가져오기
         console.log("jwtToken: " , jwtToken);
         if (!jwtToken) {
-      throw new Error("JWT 토큰이 없습니다.");
+          alert("JWT 토큰이 없습니다. 다시 로그인해주세요.");
+          return;
+      //throw new Error("JWT 토큰이 없습니다.");
     }
 
         const response = await axios.post("http://localhost:8080/api/diary/addDiaryList", diaryDataToSave,{
@@ -117,11 +144,17 @@ axios.interceptors.response.use(
 
   const onClicksaveDiaryButton = async () => {
     const result =  await sendDiaryContentData();
-      if (result.success) {
+      try{
+        if (result && result.success) {
       alert("일기가 저장되었습니다.");
-      router.push("/diary/common").then(() => location.reload());
+      // router.push("/diary/common").then(() => location.reload());
       } else {
-        alert(`저장 실패: ${result.error}`);
+        alert("저장 실패: " + (result.error || "알 수 없는 오류"));
+      }
+      } catch(error){
+        console.error(error);
+        alert("서버 요청 실패");
+
       }
   };
     return {
@@ -155,21 +188,18 @@ axios.interceptors.response.use(
                     :auto-apply="true"
                     :locale="'ko'"
                   />
-
-                <!-- <div v-if="diaryContentData.date">선택된 날짜: {{ diaryContentData.date }}</div> -->
-
                   </div>
                 </div>
               </div>
               <div class="section01">
                 <div>
                     <div>
-                      <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
+                  <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
                   <input type="text" class="author" id="author" name="author" v-model="diaryContentData.author" placeholder=""  />
                     </div>
                     <div class="titleSc">
                       <label for="title">제목&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="title" id="title" name="title" v-model="diaryContentData.title" placeholder="" />
+                  <input type="text" class="title" id="title" name="title" v-model="diaryContentData.title"  />
                     </div>
                 </div>
               </div>
