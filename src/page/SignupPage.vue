@@ -12,6 +12,8 @@ export default {
     const router = useRouter();
     // 쿠키 객체 생성
     const cookies = new Cookies();
+    const focusEmailField = ref(null);
+
     const signUpData =  ref({
       email:{
         emailPrefix:"",
@@ -123,13 +125,22 @@ export default {
 
         const response = await axios.post("http://localhost:8080/api/auth/register", signUpDataToSave);
 
-        // localStorage.setItem("signUpDataToSave", JSON.stringify(signUpDataToSave));
         alert("회원가입이 완료되었습니다!");
 
+        router.push("/login").then(() => location.reload());
         return response.data;
       } catch (error) {
         console.error("API 호출 실패", error);
-        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        if (error.response && error.response.status === 400) {
+          alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+          alert(error.response.data); // 서버에서 보낸 메시지: "이미 존재하는 이메일입니다."
+          focusEmailField.value.focus(); 
+          errorState.value.email = true;
+          errorMessage.value.email = error.response.data;
+        } else {
+          console.error("API 호출 실패", error);
+          alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        }
       }
     };
 
@@ -161,6 +172,7 @@ export default {
 
     return{
       signUpData,
+      focusEmailField,
       errorState,
       errorMessage,
       visibility,
@@ -200,7 +212,7 @@ export default {
       <div>
       <div style="display:flex; gap: 10px; align-items: center;">
         <!--이메일 앞부분-->
-        <input size="20"  type="text" v-model="signUpData.email.emailPrefix"  @input="validateField.email" class="signUp_form-input" name="emailPrefix" id="emailPrefix" aria-describedby="emailHelp"/>
+        <input size="20"  type="text" ref="focusEmailField" v-model="signUpData.email.emailPrefix"  @input="validateField.email" class="signUp_form-input" name="emailPrefix" id="emailPrefix" aria-describedby="emailHelp"/>
         <span>@</span>
         <!--이메일 도메인 선택-->
         <select v-model="signUpData.email.emailDomain" @change="validateField.email" class="signUp_form-input">

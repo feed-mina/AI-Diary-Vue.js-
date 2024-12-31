@@ -151,14 +151,11 @@ axios.interceptors.response.use(
     console.log(result)
     alert("일기가 저장되었습니다.");
     router.push("/componentB").then(() => location.reload());
-    if (result.success) {
-    alert("일기가 저장되었습니다.");
-    router.push("/componentA").then(() => location.reload());
-  } else if (result && result.error) {
-    alert("저장 실패: " + result.error);
+    if (result && result.error) {
+      alert("저장 실패: " + result.error);
     
     router.push("/").then(() => location.reload());
-  }
+  }  
   };
     return {
       emotionItems,
