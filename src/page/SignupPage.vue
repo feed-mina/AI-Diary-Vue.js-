@@ -28,9 +28,13 @@ export default {
         first:"",
         middle:"",
         last:"",
-      }
+      },
+      message:"",
     });
-
+const validateDate = ref({
+  message:"",
+  code:"",
+})
     const errorState = ref({
       userId: false,
       password: false,
@@ -167,8 +171,21 @@ export default {
       router.push("/login").then(() => {
         location.reload(); // 새로고침
       });  
-
     };
+
+    const sendVerificationCode = async() =>{
+      try{
+        const response = await axios.post("http://localhost:8080/api/auth/signup", null, {
+          params: { email: signUpData.email },
+        });
+        signUpData.message = response.data;
+
+      }catch(error){
+        console.error(error);
+        this.message = "오류 발생!";
+
+      }
+    }
 
     return{
       signUpData,
@@ -179,6 +196,7 @@ export default {
       toggleVisibility,
       handleInput,
       onClickSignUpButton,
+      sendVerificationCode
     };
   },
 };
@@ -188,8 +206,8 @@ export default {
 
 <div class="signupPage">
   <div class="signUp_form">
-    <form @submit.prevent="onClickSignUpButton">
-
+    <!-- <form @submit.prevent="onClickSignUpButton"> -->
+      <form @submit.prevent="sendVerificationCode">
     <!--ID-->
     <div class="signUp-session">
       <div class="signUp-label">
@@ -315,10 +333,15 @@ export default {
       </div>
     </div>
     <!--Submit -->
-     <button type="button" @click="onClickSignUpButton"  class="signup_form_button">
+     <!-- <button type="button" @click="onClickSignUpButton"  class="signup_form_button">
       회원가입
+     </button> -->
+     <button type="button" @click="onClickVerificationButton"  class="verification_form_button">
+      인증 코드 보내기
      </button>
     </form>
+    <p v-if="signUpData.message">{{ signUpData.message }}</p>
+
   </div>
 </div>
 </template>
@@ -394,6 +417,23 @@ export default {
 .signup_form_button:hover{
   background-color: #357abd;
 
+}
+
+.verification_form_button{
+  width: 100%; /* 버튼이 컨테이너에 맞춰짐 */
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+}
+
+.verification_form_button:hover{
+  background-color: #357abd;
 }
 .signUp_form-oo{
   font-size: 0.9rem;

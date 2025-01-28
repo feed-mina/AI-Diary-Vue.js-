@@ -150,7 +150,7 @@ axios.interceptors.response.use(
     const result =  await sendDiaryContentData();
     console.log(result)
     alert("일기가 저장되었습니다.");
-    router.push("/componentB").then(() => location.reload());
+    router.push("/diary/common").then(() => location.reload());
     if (result && result.error) {
       alert("저장 실패: " + result.error);
     

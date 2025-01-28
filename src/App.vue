@@ -5,6 +5,7 @@ import About from '@/page/About.vue';
 import NotFound from '@/page/NotFound.vue';    
 import ComponentB from '@/components/ComponentB.vue';
 import ComponentC from '@/components/ComponentC.vue';
+import DiaryList from "@/page/DiaryList.vue";
 
 import DiaryHeader from "@/components/Header.vue";
 import DiaryNav from "@/components/DiaryNav.vue";
@@ -22,7 +23,7 @@ export default {
       '/': Home,
       '/about': About,
       '/notFound': NotFound, 
-      '/componentB': ComponentB,
+      '/diary/common': DiaryList,
       '/componentC': ComponentC, 
     };
 
