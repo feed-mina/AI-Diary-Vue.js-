@@ -7,7 +7,8 @@ import Cookies from 'universal-cookie';
 export default {
   name: 'Tutorial',
   setup() {
-  const currentView = computed(() => {
+    const isHidden = ref(true);   // 기본값: 숨기기 상태
+    const currentView = computed(() => {
     const routes = {
       '/notFound': NotFound,
     };
@@ -37,14 +38,23 @@ export default {
       ],
 
     });
+    
+    const toggleHidden = (value) => {
+      isHidden.value = value;
+    };
   const saveDiary = () => {
+    event.preventDefault(); // 기본 동작 방지
   console.log("Diary saved");
+  alert("일기가 저장되었습니다.");
+  location.reload();
   };
 
   return {
     currentView,
     diaryContent,
-    saveDiary
+    toggleHidden,
+    saveDiary,
+    isHidden
   };
 }
 }
@@ -88,7 +98,7 @@ export default {
                   </div>
                 </div>
                 <div class="tags">
-                   <div  v-tooltip="'text1'"> 
+                   <div  v-tooltip="'오늘의 감정을 태그로 입력하세요.'"> 
                     <input type="text" id="tag1" name="tag1" v-model="diaryContent.tags.tag1" placeholder="" disabled/>
 
                     <input type="text" id="tag2" name="tag2" v-model="diaryContent.tags.tag2" placeholder="" disabled/>
@@ -135,19 +145,20 @@ export default {
               <div class="section05">
                 <div  v-tooltip="'일기를 다른 사람에게 공유할지를 선택해주세요.'">
                       <span>🔎</span>
-                    <select v-model="diaryContent.hidden" id="hidden" required>
-                      <option value="true">
-                        숨기기
-                      </option>
-                      <option value="false">
-                        보여주기
-                      </option>
-                    </select>
-                
+                      <div class="button-group">
+                      <button 
+                        :class="{ active: isHidden }" 
+                         @click.prevent="toggleHidden(true)"
+                      >숨기기</button>
+                      <button 
+                        :class="{ active: !isHidden }" 
+                         @click.prevent="toggleHidden(false)"
+                      >보여주기</button>
+                    </div> 
                   </div>
               </div>
               <div class="saveDiary">
-                      <button type="button" @click="saveDiary">기록하기</button>
+                      <button type="button"  @click.prevent="saveDiary">기록하기</button>
                     </div>
               <!--diaryTuto-dalle-->
             </div>
@@ -190,7 +201,7 @@ export default {
   
     /* overflow-y: auto; 스크롤 가능 */
     /* z-index: 9999; */
-    font-size: 2vmin;
+    font-size: 1em;
   }
 
   .diaryTuto input,
@@ -198,7 +209,7 @@ export default {
     border-radius: 0.3125em;
     background: #eee7db;
     border: 0 solid black;
-    font-size: 0.9375em;
+    font-size: 1em;
   }
   .tutorial_container {
     /* border: 1px solid #00fa9a; */
@@ -397,6 +408,33 @@ export default {
     margin-right: 0.3125em;
   }
 
+
+  .section05 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 15px; 
+    border-radius: 1em;
+    background: #eee7db;
+  color: black;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button.active {
+    color: #fff;
+    background: #A5778F;
+}
+
 .saveDiary{
   display: flex;
   flex-direction: column;
@@ -409,10 +447,15 @@ export default {
     font-size: 1rem;
     font-weight: bold;
     color: #fff;
-    background: #A5778F;
+    border: #A5778F;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s;
+    margin-top: 1em; /* 기록하기 버튼과 간격 조정 */
+}
+.saveDiary button:hover {
+  background: #8a5e72;
+  color: #fff;
 }
 </style>

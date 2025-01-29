@@ -86,11 +86,12 @@ export default {
   
   <style scoped>
   .footer {
+    margin-bottom: -100px;
     background-color: #222;
     color: white;
     text-align: center;
-    padding: 10px 0;
-    margin-top: 20px;
+    /* padding: 10px 0; */
+    /* margin-top: 20px; */
   }
   </style>
   

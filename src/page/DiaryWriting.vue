@@ -294,7 +294,7 @@ axios.interceptors.response.use(
     padding-top: 1.5em;
     width: 100%;
     height: 100%;
-    font-size: 2vmin;
+    font-size: 1em;
   }
   .titleSc{
     padding-top:2rem;
@@ -305,7 +305,7 @@ axios.interceptors.response.use(
     border-radius: 0.3125em;
     background: #eee7db;
     border: 0 solid black;
-    font-size: 0.9375em;
+    font-size: 1em;
   }
   .diaryWriting_container {
     /* border: 1px solid #00fa9a; */

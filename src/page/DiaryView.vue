@@ -306,7 +306,7 @@ export default {
   
     /* overflow-y: auto; 스크롤 가능 */
     /* z-index: 9999; */
-    font-size: 2vmin;
+    font-size: 1rem;
   }
 
   .diaryTuto input,
@@ -314,7 +314,7 @@ export default {
     border-radius: 0.3125em;
     background: #eee7db;
     border: 0 solid black;
-    font-size: 0.9375em;
+    font-size: 1rem;
   }
   .diaryView_container {
     /* border: 1px solid #00fa9a; */
@@ -485,7 +485,7 @@ export default {
  .diaryView_noDalle .section4 textarea {
     width: 100%;
     padding: 0.625em;
-    font-size: 1em;
+    font-size: 1rem;
     overflow: auto;
     resize: vertical;
   }

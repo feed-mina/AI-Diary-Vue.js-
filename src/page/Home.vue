@@ -132,7 +132,7 @@ export default {
 }
 
 .home-text span {
-  font-size: 3vmin;
+  font-size: 1em;
 }
 
 
