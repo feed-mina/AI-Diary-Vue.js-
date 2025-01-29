@@ -72,6 +72,8 @@ export default {
  display: flex; 
   width: 100vw;
   height: 100%;
+  /*height: 100vh;  전체 높이 맞추기 */
+  margin: 0; /* 혹시 있을 여백 제거 */
   background-color: #ffffff;
 }
 .content-wrap {

@@ -96,7 +96,8 @@ setup(){
 
 <style> 
 .nav-wrap{
-  width: 30vw; /* 네비게이션 너비 */
+  /*width: 30vw;  네비게이션 너비 */
+  flex-shrink: 0; /* 크기 축소 방지 */
   height: 100%; /* 부모 컨테이너의 높이를 100% 채움 */
   background-color: #f4f4f4;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -104,7 +105,7 @@ setup(){
   flex-direction: column;
   justify-content: flex-start; /* 내용 상단 정렬 */
   padding: 1rem;
-  z-index: 10;
+  /* z-index: 10; */
 }
 .signup-button-wrap{
   position: absolute;
