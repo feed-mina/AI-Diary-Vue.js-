@@ -164,18 +164,23 @@ export default {
 
 .loginPage {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 50%; /* 화면 전체 높이를 채움 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  min-height: 100vh; /* 전체 화면 높이를 차지하도록 설정 */
+  flex-direction: column; /* 요소들을 세로 방향으로 정렬 */
+  /* height: 50%; 화면 전체 높이를 채움 */
   background-color: #f8f9fa; /* 배경색 */
 }
 .login_form{
-  width: 90%; /* 화면 크기 따라 자동 조정 */
-  max-width: 500px; /* 최대 너비 설정 */
+  width: 100%;
+  max-width: 400px; /* 폼 최대 너비 설정 */
+  position: relative;
+  z-index: 10; /* footer 위에 배치 */
+  /* width: 90%; 화면 크기 따라 자동 조정 */
   padding: 2rem;
   background-color: #f9f9f9;
   border-radius: 10px;
-  margin: auto;
+  /* margin: auto; */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
 }

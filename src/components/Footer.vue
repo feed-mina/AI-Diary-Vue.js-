@@ -12,11 +12,16 @@
   
   <style scoped>
   .footer {
-    background-color: #222;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    margin-top: 20px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background-color: black;
+  color: white;
+  text-align: center;
+  line-height: 50px;
+    /* padding: 10px 0; */
+    /* margin-top: 20px; */
   }
   </style>
   
