@@ -232,8 +232,10 @@ export default {
 }
 .diary-post {
   background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
   border: solid 1px #ccc;
-  border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: pointer;
@@ -245,6 +247,9 @@ export default {
 }
 
 .diary-post header h3 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5em;
   white-space: nowrap; /* 내용 길게 표시 방지 */
   overflow: hidden;
@@ -254,6 +259,9 @@ export default {
 }
 
 .diary-post header span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   display: block;
   margin-top: 0.5em;
   white-space: nowrap; /* 내용 길게 표시 방지 */
@@ -286,17 +294,28 @@ export default {
   cursor: pointer;
 }
 .diaryTime{
-  font-size: 1.5em;
+  font-size: 1em;
+  color: #888;
+  white-space: nowrap;
 }
 .diaryTitle{
-  font-size: 2em;
+  font-size:  1em;
+  font-weight: bold;
+  color: #333;
+  flex-grow: 1; /* 제목이 공간을 차지하도록 설정 */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .diaryAuthor{
-  font-size: 1.5em;
+  font-size: 1em;
+  color: #666;
 }
 
 .diaryContent{
   font-size: 1em;
+  color: #444;
+  line-height: 1.5;
 }
 .pagination button.active {
   background-color: #805a3b;
