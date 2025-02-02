@@ -15,8 +15,10 @@ export default {
       const router = useRouter();
     // 쿠키 객체 생성
     const cookies = new Cookies();
-    
+    const userId = localStorage.getItem("userId");
+    console.log("userId : ", userId);
     const diaryContentData =  ref({
+      userId: userId || "",
       date:"",
       author:"",
       title:"",
@@ -24,84 +26,79 @@ export default {
       emotion:"",
       content:"",
       hidden:true,
-    });
-
-    const diaryVisibility = ref({
-      diaryContentData: false,
-    });
+    }); 
 
     const emotionItems = [
-      { text: "😁 I feel good", value: "1" },
-      { text: "😂 Oh, That's so funny", value: "2" },
-      { text: "😫 What should I do?!", value: "3" },
-      { text: "😒 unpleasant, boring", value: "4" },
-      { text: "😤 How dare you", value: "5" },
-      { text: "😡 Angry", value: "6" },
-      { text: "🤯 I wanna get outta here...", value: "7" },
-      { text: "💖 Love", value: "8" },
-      { text: "🤕 Not in a good condition", value: "9" },
-      { text: "💙 I feel blue", value: "10" }
+      { text: "😁 기분이 좋아요", value: "1" },
+      { text: "😂 너무 웃겨요", value: "2" },
+      { text: "😫 어떡해야 할까요?!", value: "3" },
+      { text: "😒 불쾌하고 지루해요", value: "4" },
+      { text: "😤 어떻게 이럴 수가", value: "5" },
+      { text: "😡 화가 나요", value: "6" },
+      { text: "🤯 여기서 벗어나고 싶어요...", value: "7" },
+      { text: "💖 사랑이 넘쳐요", value: "8" },
+      { text: "🤕 몸 상태가 좋지 않아요", value: "9" },
+      { text: "💙 우울해요", value: "10" }
     ];
 
-    axios.interceptors.request.use(
-  (config) => {
-    console.log("Axios 요청 설정:", config);
-    return config;
-  },
-  (error) => {
-    console.error("Axios 요청 에러:", error);
-    return { success: false, error: error.response?.data || "오류가 발생했습니다." };
-  }
-);
 
-axios.interceptors.response.use(
-  (response) => {
-    console.log("Axios 응답 데이터:", response);
-    return response;
-  },
-  (error) => {
-    console.error("Axios 응답 에러:", error);
-    return Promise.reject(error);
-  }
-);
+    axios.interceptors.request.use(
+      (config) => {
+        console.log("Axios 요청 설정:", config);
+        return config;
+      },
+      (error) => {
+        console.error("Axios 요청 에러:", error);
+        return { success: false, error: error.response?.data || "오류가 발생했습니다." };
+      }
+    );
+
+    axios.interceptors.response.use(
+      (response) => {
+        console.log("Axios 응답 데이터:", response);
+        return response;
+      },
+      (error) => {
+        console.error("Axios 응답 에러:", error);
+        return Promise.reject(error);
+      }
+    );
 
     const sendDiaryContentData = async()=>{
       try{
-        const { title, date, author, tags, emotion, content, hidden} = diaryContentData.value; 
+        const { userId, title, date, author, tags, emotion, content, hidden} = diaryContentData.value; 
         
+        // 값 검증
+        if (!date || !author || !title || !emotion || !content) {
+          alert("필수 필드를 채워주세요.");
+          return false;
+        }
             // 값 검증
-    if (!date) {
-      alert("날짜를 입력해주세요.");
-      return;
-    }
-    if (!author) {
-      alert("작성자를 입력해주세요.");
-      return;
-    }
-    if (!title) {
-      alert("제목을 입력해주세요.");
-      return;
-    }
-    if (!emotion) {
-      alert("감정지수를 선택해주세요.");
-      return;
-    }
-    if (!content) {
-      alert("내용을 입력해주세요.");
-      return;
-    }
-    // 값 검증
-    if (!date || !author || !title || !emotion || !content) {
-      alert("필수 필드를 채워주세요.");
-      return;
-    }
+          if (!date) {
+            alert("날짜를 입력해주세요.");
+            return;
+          }
+          if (!author) {
+            alert("작성자를 입력해주세요.");
+            return;
+          }
+          if (!title) {
+            alert("제목을 입력해주세요.");
+            return;
+          }
+          if (!emotion) {
+            alert("감정지수를 선택해주세요.");
+            return;
+          }
+          if (!content) {
+            alert("내용을 입력해주세요.");
+            return;
+          }
         const diaryDataToSave = {
-          pageNo: 1,
-          pageSize: 10,
           title,
           author,
           emotion,
-          userId : localStorage.getItem("userId"),
+          userId,
           date,
           content,
           tag1 : tags.tag1,
@@ -116,58 +113,60 @@ axios.interceptors.response.use(
           alert("JWT 토큰이 없습니다. 다시 로그인해주세요.");
           router.push("/login");
           return;
-      //throw new Error("JWT 토큰이 없습니다.");
-    }
+        }
 
         const response = await axios.post("http://localhost:8080/api/diary/addDiaryList", diaryDataToSave,{
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             "Content-Type": "application/json",
             "X-Forwarded-For": "127.0.0.1",
-          },
+            },
           withCredentials: true, // 쿠키 인증 허용
-
         });
         
         console.log("jwtToken: " , jwtToken);
         console.log('response',response);
-      return response.data;
-      }catch(error) {
-        if (error.response && error.response.status === 401) {
-        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        router.push("/login"); // 로그인 페이지로 이동
-      } else {
-      console.error("API 호출 실패:", error);
-      alert("일기 저장에 실패했습니다. 관리자에게 문의해주세요.");
-      
+        
+        alert("일기가 저장되었습니다.");
+        router.push("/diary/common");
+          return response.data;
+      } catch(error) {
+        if (error.response?.status === 401) {
+          alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+          router.push("/login"); // 로그인 페이지로 이동
+        } else {
+          console.error("API 호출 실패:", error);
+          alert("일기 저장에 실패했습니다. 관리자에게 문의해주세요.");
+        }
       return { success: false, error: "서버 오류가 발생했습니다." }; // 실패 메시지 반환
         }
-      }
-    } ;
+      } ;
   
 
   const onClicksaveDiaryButton = async () => {
     const result =  await sendDiaryContentData();
-    console.log(result)
-    alert("일기가 저장되었습니다.");
-    router.push("/diary/common").then(() => location.reload());
-    if (result && result.error) {
+    if (result?.error) {
       alert("저장 실패: " + result.error);
-    
-    router.push("/").then(() => location.reload());
-  }  
+      router.push("/").then(() => location.reload());
+    }  
+    console.log('일기저장결과: ', result);
+    if(result == 'false'){
+      location.reload();
+    }else{
+     alert("일기가 저장되었습니다.");
+     router.push("/diary/common");
+
+
+    }
   };
     return {
       emotionItems,
       diaryContentData,
-      onClicksaveDiaryButton,
-      diaryVisibility
+      onClicksaveDiaryButton, 
     };
   },
 }
 </script>
-
-
 <template>
   <div class="diaryWriting">
     <div class="diaryWriting_content">
@@ -175,8 +174,7 @@ axios.interceptors.response.use(
         <div class="diaryWriting_container">
           <form>
             <div class="diaryWritingTitle">
-                <span class="diaryWritingHighlight">
-                </span>
+                <span class="diaryWritingHighlight"> </span>
             </div>
             <div class="diaryWriting_noDalle">
               <div class="section0">
@@ -194,12 +192,13 @@ axios.interceptors.response.use(
               <div class="section01">
                 <div>
                     <div>
-                  <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="author" id="author" name="author" v-model="diaryContentData.author" placeholder=""  />
+                      <label for="author">작성자&nbsp;&nbsp;&nbsp;</label>
+                      <input type="text" class="author" id="author" name="author" v-model="diaryContentData.author" placeholder=""  />
+                      <input type="hidden" class="userId" id="userId" name="userId" v-model="diaryContentData.userId" />
                     </div>
                     <div class="titleSc">
                       <label for="title">제목&nbsp;&nbsp;&nbsp;</label>
-                  <input type="text" class="title" id="title" name="title" v-model="diaryContentData.title"  />
+                     <input type="text" class="title" id="title" name="title" v-model="diaryContentData.title"  />
                     </div>
                 </div>
               </div>
@@ -244,10 +243,11 @@ axios.interceptors.response.use(
                 </div>
                 <textarea v-model="diaryContentData.content" rows="3" class="content" name="content" id="content" ></textarea>
               </div>
+              <span>🔎</span>
+
               <!--section05-->
               <div class="section05">
-                      <span>🔎</span>
-                    <select v-model="diaryContentData.hidden" id="hidden" required>
+                    <!-- <select v-model="diaryContentData.hidden" id="hidden" required>
                       <option value="true">
                         숨기기
                       </option>
@@ -257,6 +257,21 @@ axios.interceptors.response.use(
                     </select>
                     <div>
                       <button type="button" @click="onClicksaveDiaryButton">일기장완료</button>
+                    </div> -->
+                    <div class="optionShow">
+                      <button 
+                      :class="{'active-button': diaryContentData.hidden}" 
+                      @click.prevent="diaryContentData.hidden = true">
+                      숨기기
+                    </button>
+                    <button 
+                      :class="{'active-button': !diaryContentData.hidden}" 
+                      @click.prevent="diaryContentData.hidden = false">
+                      보여주기
+                    </button>
+                    </div>
+                    <div>
+                      <button type="button" @click="onClicksaveDiaryButton">기록하기</button>
                     </div>
               </div>
 
@@ -276,24 +291,24 @@ axios.interceptors.response.use(
     min-width: 25em;
     height: 100%;
     margin: 0 auto;
-    border-radius: 0.625em;
+    border-radius: 1em;
     overflow: hidden;
 }
 
 .diaryWriting_content {
     /* height: 100%; */
-    width: 99%;
-    top: 1.875em;
+    width: 100%;
+    top: 2em;
     right: 0;
-    bottom: 33.75em;
-    left: 3.75em;
+    bottom: 34em;
+    left: 4em;
     background-size: 30px 30px;
   }
 
   .diaryTuto {
     padding-top: 1.5em;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     font-size: 1em;
   }
   .titleSc{
@@ -302,7 +317,7 @@ axios.interceptors.response.use(
   .diaryTuto input,
   textarea,
   button {
-    border-radius: 0.3125em;
+    border-radius: 1em;
     background: #eee7db;
     border: 0 solid black;
     font-size: 1em;
@@ -329,7 +344,10 @@ axios.interceptors.response.use(
 
   .diaryWriting_container form {
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   .diaryWriting_noDalle {
     width: 65%;
@@ -337,12 +355,7 @@ axios.interceptors.response.use(
     margin: 0em;
     float: left;
   }
-  .diaryWriting_noDalle input,
-  select,
-  button,
-  option {
-    height: 1.875em;
-  }
+  
 
   .diaryWriting_container input:focus {
     outline: 2px solid #c1ab86;
@@ -354,18 +367,19 @@ axios.interceptors.response.use(
     width: 100%;
     display: flex;
     flex-direction: row;
-    margin-bottom: 0.9375em;
+    margin-bottom: 1em;
   }
   .diaryWriting_noDalle .section01 {
-    margin-top: 0.125em;
+    margin-top: 1em;
     width: 100%;
     display: flex;
     flex-direction: row;
-    margin-bottom: 0.9375em;
+    margin-bottom: 1em;
   }
 
   .diaryWriting_noDalle .section01 input {
-    width: 40%;
+    height: 3em;
+    width: 70%;
     text-align: center;
   }
 
@@ -378,19 +392,21 @@ axios.interceptors.response.use(
 
  .diaryWriting_noDalle .section2 {
     width: 100%;
-    margin-bottom: 0.625em;
+    margin-bottom: 1em;
   }
  .diaryWriting_noDalle .section2 .tags {
-    padding-top: 0.625em;
+    padding-top: 1em;
     width: 95%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
   }
  .diaryWriting_noDalle .section2 input {
+    font-weight: 500;
+    height: 3em;
     text-align: center;
     width: 25%;
-    margin: 0.3125em;
+    margin: 1em;
     caret-color: #604e2e;
   }
  .diaryWriting_noDalle .section2 input:hover {
@@ -401,7 +417,7 @@ axios.interceptors.response.use(
   }
  .diaryWriting_noDalle .section2 button {
     width: 25%;
-    margin: 0.3125em;
+    margin: 1em;
     height: 2em;
     background: #c1ab86;
   }
@@ -415,19 +431,19 @@ axios.interceptors.response.use(
  .diaryWriting_noDalle .section3 {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.25em;
+    margin-bottom: 2em;
   }
  .diaryWriting_noDalle .section3 .text {
-    margin-bottom: 0.625em;
+    margin-bottom: 1em;
   }
  .diaryWriting_noDalle .section3 select {
-    margin-left: 0.625em;
-    border-radius: 0.25em;
+    margin-left: 1em;
+    border-radius: 1em;
     border: 1px solid #c1ab86;
     outline: 0 none;
     text-align: center;
     width: 35%;
-    height: 2.5em;
+    height: 3em;
   }
 
  .diaryWriting_noDalle .section3 .selectBox .v-select {
@@ -439,9 +455,9 @@ axios.interceptors.response.use(
   }
  .diaryWriting_noDalle .section3 .selectBox .v-select option {
     color: #c1ab86;
-    padding: 0.1875em 0;
+    padding: 1em 0;
     font-size: 1em;
-    border-radius: 0.25em;
+    border-radius: 1em;
     text-align: center;
   }
  .diaryWriting_noDalle .section3 .selectBox .icoArrow {
@@ -449,7 +465,7 @@ axios.interceptors.response.use(
     top: 0;
     right: 0;
     z-index: 1;
-    width: 2.1875em;
+    width: 3em;
     height: inherit;
     display: flex;
     justify-content: center;
@@ -468,18 +484,18 @@ axios.interceptors.response.use(
  .diaryWriting_noDalle .section4 {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1.25em;
-    margin-left: 0.3125em;
+    margin-bottom: 1em;
+    margin-left: 1em;
     width: 95%;
-    height: 50%;
+    /* height: 50%; */
   }
  .diaryWriting_noDalle .section4 .text {
-    margin-bottom: 0.625em;
+    margin-bottom:1em;
   }
  .diaryWriting_noDalle .section4 textarea {
     width: 100%;
-    height: 100%;
-    padding: 0.625em;
+    height: 60%;
+    padding: 1em;
     font-size: 1.25em;
     overflow: auto;
     resize: vertical;
@@ -492,27 +508,27 @@ axios.interceptors.response.use(
     width: 95%;
     display: flex;
     flex-direction: row;
-    margin-bottom: 1.25em;
-    margin-left: 0.3125em;
+    margin-bottom: 1em;
+    margin-left: 1em;
   }
  .diaryWriting_noDalle .section5 .text {
-    margin-bottom: 0.625em;
+    margin-bottom: 1em;
   }
 
  .diaryWriting_noDalle .section5 select {
     width: 35%;
-    height: 2.5em;
-    margin-left: 0.625em;
-    border-radius: 0.25em;
+    height: 3em;
+    margin-left: 1em;
+    border-radius: 1em;
     border: 1px solid #c1ab86;
     outline: 0 none;
     text-align: center;
-    margin-right: 0.3125em;
+    margin-right: 1em;
   }
 
  .diaryWriting_noDalle .section5 button {
     width: 35%;
-    margin-right: 0.3125em;
+    margin-right: 1em;
     text-align: center;
   }
 
@@ -524,4 +540,41 @@ axios.interceptors.response.use(
     transition: 0.3s;
   }
 
+  .content{
+    height: 10em;
+  }
+
+  .section05 {
+    margin-left: 1em;
+    display: flex;
+    gap: 2em;
+    flex-direction: column;
+}
+
+.section05 button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  background-color: #f0f0f0;
+}
+
+.section05 button:hover {
+  background-color: #ddd;
+}
+
+.section05 .active-button {
+  background-color: #a48f7a;
+  color: white;
+}
+
+.optionShow{
+    margin-top: 2rem;
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 </style>

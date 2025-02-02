@@ -118,7 +118,7 @@ export default {
   <div id="login_form" class="login_form">
       <!--로그인 또는 회원가입 폼 렌더링-->
           <!--로그인 폼-->
-          <form @submit.prevent="onClickLoginButton">
+          <form @submit.prevent="onClickLoginButton" class="login_form_box">
    
           <!--ID-->
           <div class="login-session">
@@ -163,26 +163,34 @@ export default {
 
 
 .loginPage {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f8f9fa; /* 배경색 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    background-color: #f8f9fa;
+    padding: 8rem;
+    flex-direction: column;
 }
 .login_form{
-  width: 90%; /* 화면 크기 따라 자동 조정 */
-  max-width: 500px; /* 최대 너비 설정 */
-  padding: 2rem;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  margin: auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 5rem;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    /* margin: auto; */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    justify-content: flex-start;
+    flex-direction: column;
+    margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem; /* 필드 간 여백 */
 }
 
-.login-session{
-  display: flex;
-  flex-direction: column; /* 수직 정렬 */
-  margin-bottom: 1.5rem; /* 필드 간 여백 */
+.login_form_box{
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 .login-label{
   font-size: 1rem;

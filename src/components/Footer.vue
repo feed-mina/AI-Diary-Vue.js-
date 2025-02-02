@@ -12,9 +12,10 @@ export default {
 
 <style scoped>
 .footer {
-  margin-bottom: -50px;
+  margin-bottom: -4rem;
 position: absolute;
 bottom: 0;
+width: 110%; 
 /* width: 100%; */
 height: 50px;
 background-color: black;

@@ -9,6 +9,7 @@ import Tutorial from "@/page/Tutorial.vue";
 import Signin from "@/page/Signin.vue";
 import LoginPage from "@/page/LoginPage.vue";
 import SignupPage from "@/page/SignupPage.vue";
+import MemberOutPage from "@/page/MemberOutPage.vue";
 import AgrrementPolicy from "@/page/AgrrementPolicy.vue";
 import DiaryWriting from "@/page/DiaryWriting.vue";
 import DiaryView from "@/page/DiaryView.vue";
@@ -25,6 +26,7 @@ const routes = [
   { path: "/signin", name: "Signin", component: Signin },
   { path: "/login", name: "LoginPage", component: LoginPage },
   { path: "/signup", name: "SignupPage", component: SignupPage },
+  { path: "/memberOut", name: "MemberOutPage", component: MemberOutPage }, 
   { path: "/agreementPolicy", name: "AgrrementPolicy", component: AgrrementPolicy },
   {path:"/diary/write", name:"DiaryWriting",component:DiaryWriting},
   {path:"/diary/view/:diaryId", name:"DiaryView",component:DiaryView},

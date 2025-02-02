@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "npm run dev",
     "server": "vue-cli-service serve",
     "dev": "vite",
     "build": "vite build",
