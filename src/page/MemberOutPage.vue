@@ -10,10 +10,9 @@
      setup(){
        const router = useRouter();
        const cookies = new Cookies(); 
-   
+       const isChecked = ref(false);
+
        const isMemberOutPg = ref(true);   
-   
-       // 로그인 입력 데이터
        const memberOutData = ref({
          userId:"",
          password : "", 
@@ -26,42 +25,18 @@
 
        const idErrorMessage = ref("");
        const passwordErrorMessage = ref("");
-       
-       // const idValid = ref(true);
-       // const passwordValid = ref(true);
    
-       const signout = () => {
-        // 로컬스토로지 userId 삭제
-        localStorage.removeItem('userId')
-      // JWT 쿠키 삭제
-        cookies.remove("jwt",{path : "/"});
-        updateMemberStatus();
-       }
-       
-       const userData = localStorage.getItem('userId');
-   
-       // 로그인 상태 확인 후 리다이렉트
-       onMounted(() => {
-         if(!userData){
-           console.log("로그인 필요");
-           userData.value = {
-             userId : "",
-             password : "",
-           };
-           router.push("/memberOut");
-         }  
-       });
-   
-       const handleMemberOutData = (event) =>{
-         memberOutData.value[event.target.name] = event.target.value;
-       };
-    
-       const goToPage = (path) => {
-        router.push(path);
-      };
+       const signout = async () => {
+         if(!isChecked.value){
+            Swal.fire({
+               title: "확인 필요",
+               text : "탈퇴 확인 체크박스를 체크해주세요.",
+               icon : "warning",
+               confirmButtonText : "확인"
+            });
+            return;
+         }
 
-       const onClickMemberOutButton = async() => {
-         console.log("로그인 데이터 :", memberOutData.value);
          if(!memberOutData.value.userId){
            // alert("아이디를 입력해주세요.");
            Swal.fire({
@@ -74,6 +49,41 @@
            return;
          }
    
+         try {
+            console.log("회원탈퇴 요청 데이터:", memberOutData.value);
+
+            // API 호출
+           const response = await axios.post("http://localhost:8080/api/auth/non-user", memberOutData.value);
+         console.log("회원탈퇴 응답: ", response);
+           // 성공 시 처리
+           Swal.fire({
+            title:"회원탈퇴 성공",
+            text:"회원탈퇴가 완료되었습니다.",
+            icon:"success",
+            cancelButtonText:"확인",
+           }).then(() =>{
+            console.log("회원탈퇴 성공");
+            localStorage.removeItem("userId"); //로컬스토리지에서 삭제
+            cookies.remove("jwt",{path : "/"}); // JWT삭제
+            router.push("/");
+           });
+         } catch (error) {
+           console.error("API 호출 실패:", error.response?.data || error.message);
+           Swal.fire({
+            title:"회원탈퇴 실패",
+            text:"회원탈퇴를 진행할 수 없습니다.",
+            icon:"error",
+            cancelButtonText:"확인",
+           });
+         }
+       }
+       
+       const goToPage = (path) => {
+        router.push(path);
+      };
+
+       const onClickMemberOutButton = async() => {
+         console.log("회원 데이터 :", memberOutData.value);
          if(!memberOutData.value.password){
            // alert("비밀번호를 입력해주세요.");
            Swal.fire({
@@ -85,74 +95,21 @@
             });
            return;
          }
-   
-         try {
-       // API 호출 및 응답 처리
-           const jwtToken = await updateMemberStatus();
-           console.log("로그인 성공, JWT:", jwtToken);
-   
-           // JWT 토큰을 쿠키 또는 localStorage에 저장
-          //  cookies.set("jwt", jwtToken, { path: "/" });
-          //  localStorage.setItem("userId", memberOutData.value.userId);
-           // alert("로그인을 완료했습니다.");
-           Swal.fire({
-            title: "회원탈퇴 성공",
-            text: "회원탈퇴를 완료했습니다!",
-            icon: "success",
-            confirmButtonText: "확인",
-            confirmButtonColor: "#A5778F",
-            background: "#f5f5f5", // 배경색 변경
-            color: "#333", // 글자색 변경
-      
-          }).then(() => {
-           router.push("/");
-         });  
-         } catch (error) {
-           // 에러 처리
-           console.error("로그인 실패:", error);
-           // alert(error.response?.data?.message || "로그인에 실패했습니다.");
-            
-           Swal.fire({
-            title: "회원탈퇴 실패",
-            text: "회원탈퇴에 실패했습니다.",
-            icon: "warning",
-            confirmButtonText: "확인",
-            confirmButtonColor: "#A5778F",
-            background: "#f5f5f5", // 배경색 변경
-            color: "#333", // 글자색 변경
-          }).then(() => {
-           location.reload();
-          });
-      
-         }
-       };
-   
-   
-       // 로그인 API 호출
-       const updateMemberStatus = async () => {
-         try {
-           const response = await axios.post("http://localhost:8080/api/auth/non-user", memberOutData.value);
-           return response.data; // 응답 데이터를 반환합니다.
-         } catch (error) {
-           console.error("API 호출 실패:", error.response?.data || error.message);
-           throw error; // 예외를 던져서 상위에서 처리하도록 합니다.
-         }
    };
    
     // JWT 쿠키 상태를 실시간으로 감지
     watch(
       () => cookies.get("jwt"), 
       ()=>{
-      updateMemberStatus();
     });
 
        return{
-        signout,
+         isChecked,
+         signout,
         goToPage,
          isMemberOutPg,
          memberOutData, 
          errorWarning, 
-         handleMemberOutData,
          idErrorMessage,
          passwordErrorMessage, 
          onClickMemberOutButton
@@ -165,19 +122,7 @@
    <div class="memberOutPage">
       <div id="memberOut_form" class="memberOut_form">
          <!--회원탈퇴 페이지 -->
-         <main>
-            <header class="sc-3e13c255-0 gwUtMK">
-               <button class="prevBtn" title="이전 페이지" type="button">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" direction="right" class="sc-34bc1965-0 eAIvBe">
-                     <rect width="24" height="24"></rect>
-                     <!-- <path d="M8 3L16.2929 11.2929C16.6262 11.6262 16.7929 11.7929 16.7929 12C16.7929 12.2071 16.6262 12.3738 16.2929 12.7071L8 21" stroke="#1c1c1e" stroke-width="1.6" stroke-linecap="round"></path> -->
-                  </svg>
-               </button>
-               <!-- <h1>회원 탈퇴</h1> -->
-            </header>
-            <div class="sc-3e13c255-1 ctrbmY"></div>
-            <div class="sc-ceed69bd-0 VpfJj">
-               <section>
+                <section>
                   <h2 class="sc-ceed69bd-1 iATcQ">불편함이 있으셨나요?</h2>
                   <p class="sc-ceed69bd-2 fBhHYS">아래 방법을 통해 해결하실 수 있습니다.</p>
                   <div class="sc-ceed69bd-3 isFuqM">
@@ -225,7 +170,8 @@
                <section>
                   <label gap="8" class="checkbox_Label">
                      <div class="checkbox-base_CheckboxBaseRoot khGpkv">
-                        <input variant="square" class="checkbox-base__CheckboxSquareInput" type="checkbox">
+                        <input type="checkbox" class="checkbox-base__CheckboxSquareInput" v-model="isChecked" />
+
                         <p class="text_Text">위 사항을 모두 확인했습니다.</p>
                      </div>
                   </label>
@@ -234,15 +180,13 @@
                   <!-- <button type="button" class="base_ButtonRoot button_StyledButtonBase3 memberOut_form_button" @click="navigateTo('/mypage')">
                   더 써볼래요
                   </button> -->
-                  <button type="button" disabled="" class="base_ButtonRoot button_StyledButtonBase2 memberOut_form_button" @click="signout">
+                  <button type="button" :disabled="!isChecked" class="base_ButtonRoot button_StyledButtonBase2 memberOut_form_button" @click="signout">
                   탈퇴 하기
                   </button>
                </div>
             </div>
-         </main>
          <!-- 회원탈퇴 페이지-->
       </div>
-   </div>
 </template>
 <style scoped> 
    /* 
