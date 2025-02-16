@@ -23,10 +23,10 @@ export default {
       total: 0,
     });
 
-    const userId = localStorage.getItem('userId');
+    const loggedInUserId = localStorage.getItem('userId');
 
-    console.log("userId : ",userId);
-    // userId와 response.data.diaryList.list.userId같은지, 같다면 내가 쓴 일기만 보기 체크박스 누를때 두개가 같은 것만 response.data.diaryList 보이기
+    console.log("loggedInUserId : ",loggedInUserId);
+    // loggedInUserId와 response.data.diaryList.list.userId같은지, 같다면 내가 쓴 일기만 보기 체크박스 누를때 두개가 같은 것만 response.data.diaryList 보이기
     const fetchDiaryList = async ( ) => {
       try {
         const response = await axios.get('http://localhost:8080/api/diary/viewDiaryList', {
@@ -35,7 +35,7 @@ export default {
             'Content-Type': 'application/json',
           },
           params: {
-            userId: showOnlyMine.value? userId:null,
+            userId: showOnlyMine.value? loggedInUserId:null,
             pageNo: page.value.pageNo,
             pageSize: page.value.pageSize,
           },
@@ -45,7 +45,18 @@ export default {
         console.log("diaryList : ",response.data.diaryList,response.data.diaryList.length,"개" );
         
         const { diaryList, total, pageSize, page: pageNum } = response.data;
-        diaries.value = diaryList || [];
+        // diaries.value = diaryList || [];
+        
+        diaries.value = diaryList.filter(diary => {
+          if(diary.diaryStatus){
+            return true;
+          }
+          if(showOnlyMine.value && diary.userId ===  loggedInUserId){
+            return true;
+          }
+          return false;
+        })
+
         page.value = { pageNo: pageNum, pageSize, total };
         const userIds = diaryList.map(diary => diary.userId);
         
@@ -54,7 +65,7 @@ export default {
           console.log("diaryList : ", diaryList[i].userId);
           console.log("userIds: ", userIds);
           console.log("userId : ", userIds[i]);
-            if(diaryList[i].userId == userId){
+            if(diaryList[i].userId == loggedInUserId){
               console.log('localStorage에 매칭되는 id', diaryList[i].userId);
               console.log("userId : ", userIds[i]);
             } 
@@ -99,20 +110,20 @@ export default {
   
     const viewDiary = async (diaryId, userId) => {
   // userId를 동적으로 반영하여 URL 생성
-  const requestUrl = `http://localhost:8080/api/diary/viewDiaryItem/${diaryId}?userId=${userId}`;
+  const requestUrl = `http://localhost:8080/api/diary/viewDiaryItem/${diaryId}?userId=${loggedInUserId}`;
 
   console.log("📌 요청 URL:", requestUrl);
 
   cookies.set("diaryId", diaryId);
-  cookies.set("userId", userId);  // 필요하면 쿠키에도 저장 가능
+  cookies.set("loggedInUserId", loggedInUserId);  // 필요하면 쿠키에도 저장 가능
 
   await fetchDiaryList();
-  router.push(`/diary/view/${diaryId}?userId=${userId}`); // userId 포함하여 이동
+  router.push(`/diary/view/${diaryId}?userId=${loggedInUserId}`); // userId 포함하여 이동
 };
         // 컴포넌트 마운트 시 일기 목록 로드
 
     onMounted(() => {
-      if (!userId) {
+      if (!loggedInUserId) {
         router.push('/');
       } else {
         fetchDiaryList();

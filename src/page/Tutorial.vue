@@ -3,7 +3,7 @@
 import {  computed, ref } from 'vue';
 import NotFound from '@/page/NotFound.vue';
 import Cookies from 'universal-cookie'; 
-
+import Swal from 'sweetalert2';
 export default {
   name: 'Tutorial',
   setup() {
@@ -45,8 +45,18 @@ export default {
   const saveDiary = () => {
     event.preventDefault(); // 기본 동작 방지
   console.log("Diary saved");
-  alert("일기가 저장되었습니다.");
-  location.reload();
+  // alert("일기가 저장되었습니다.");
+  Swal.fire({
+    title : "튜토리얼모드: 저장 완료 !",
+    text : "일기장이 성공적으로 저장되었습니다.",
+    icon : "success",
+    confirmButtonText :"좋아요!",
+    confirmButtonColor : "#5DBB63",
+    background: "#f5f5b5", // 배경색 변경
+    color: "#330", // 글자색 변경
+  }).then(() =>{
+    location.reload();
+  })
   };
 
   return {

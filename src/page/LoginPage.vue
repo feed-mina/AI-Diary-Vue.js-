@@ -3,6 +3,7 @@ import {ref, onMounted} from "vue";
 import {useRouter} from "vue-router";
 import Cookies from "universal-cookie";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   name: 'LoginPage', 
@@ -52,13 +53,27 @@ export default {
 
     const onClickLoginButton = async() => {
       console.log("로그인 데이터 :", loginData.value);
-      if(!loginData.value.userId){
-        alert("아이디를 입력해주세요.");
+      if(!loginData.value.userId){        
+        Swal.fire({
+              title: "아이디 오류",
+              text: "아이디를 입력해주세요",
+              icon: "warning",
+              confirmButtonText: "확인",
+              confirmButtonColor: "#FF5733"
+            });
         return;
       }
 
       if(!loginData.value.password){
-        alert("비밀번호를 입력해주세요.");
+        // alert("비밀번호를 입력해주세요.");
+        
+        Swal.fire({
+              title: "비밀번호 오류",
+              text: "비밀번호를 입력해주세요",
+              icon: "warning",
+              confirmButtonText: "확인",
+              confirmButtonColor: "#FF5733"
+            });
         return;
       }
 
@@ -70,15 +85,31 @@ export default {
         // JWT 토큰을 쿠키 또는 localStorage에 저장
         cookies.set("jwt", jwtToken, { path: "/" });
         localStorage.setItem("userId", loginData.value.userId);
-        alert("로그인을 완료했습니다.");
-      router.push("/diary/common").then(() => {
+        // alert("로그인을 완료했습니다.");
+        
+        Swal.fire({
+              title: "로그인 성공",
+              text: "로그인을 완료했습니다",
+              icon: "success",
+              confirmButtonText: "확인",
+              confirmButtonColor: "#357abd",
+            });
+
+            router.push("/diary/common").then(() => {
         location.reload(); // 새로고침
       });  
-
       } catch (error) {
         // 에러 처리
         console.error("로그인 실패:", error);
-        alert(error.response?.data?.message || "로그인에 실패했습니다.");
+        // alert(error.response?.data?.message || "로그인에 실패했습니다.");
+        
+        Swal.fire({
+              title: "로그인 실패",
+              text: "로그인을 실패했습니다.",
+              icon: "warning",
+              confirmButtonText: "확인",
+              confirmButtonColor: "#FF5733"
+            });
       }
     };
 

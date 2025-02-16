@@ -4,6 +4,7 @@ import { computed, ref, watchEffect, onMounted } from 'vue';
 import {useRouter, useRoute } from "vue-router";
 import axios from "axios";
 import Cookies from "universal-cookie";
+import Swal from "sweetalert2";
 
 export default {
   name: 'DiaryView',
@@ -107,6 +108,16 @@ export default {
         // 숨겨진 일기인지 확인
         if(diaryContentItem.value.hidden && diaryContentItem.value.userId!== userId){
           alert('접근 권한이 없습니다.');
+          Swal.fire({
+            title:"본인확인",
+            text : '접근 권한이 없습니다.',
+            icon:"warning",
+            confirmButtonText :"취소",
+            confirmButtonColor : "#FFA500",
+            background : "#f5f5f5",
+            color:"#999"
+          });
+
         }
         return response.data;
       } catch (error) {
@@ -137,8 +148,18 @@ export default {
 
         console.log("jwtToken: " , jwtToken);
         if (!jwtToken) {
-          alert("로그인한 사람만 가능합니다.");
-          router.push("/login");
+          Swal.fire({
+            title:"로그인 필요!",
+            text : "로그인한 사람만 가능합니다.",
+            icon:"warning",
+            confirmButtonText :"로그인페이지이동",
+            confirmButtonColor : "#FF5733",
+            background : "#f5f5f5",
+            color:"#999"
+          }).then(() =>{
+            router.push("/login");            
+          })
+          // alert("로그인한 사람만 가능합니다.");
           return;
         }
 
@@ -162,20 +183,55 @@ export default {
         });
         
         console.log('response',response);
-        alert("일기장이 저장되었습니다");
+        // alert("일기장이 저장되었습니다");
+        Swal.fire({
+            title:"로그인 필요!",
+            text : "로그인한 사람만 가능합니다.",
+            icon:"success",
+            confirmButtonText :"좋아요 !",
+            confirmButtonColor : "#A5778F",
+            background : "#f5f5f5",
+            color:"#999"
+          }).
         router.push("/diary/common").then(() => location.reload());
         return response.data;
       } catch (error) {
         console.error("API 호출 실패", error);
-        alert("일기장 저장 중 오류가 발생했습니다.");
-
+        // alert("일기장 저장 중 오류가 발생했습니다.");
+        Swal.fire({
+            title:"저장 실패!",
+            text : "일기장 저장 중 오류가 발생했습니다.",
+            icon:"error",
+            confirmButtonText :"확인",
+            confirmButtonColor : "#FF5733",
+            background : "#f5f5f5",
+            color:"#999"
+          });
         if (error.response && error.response.status === 400) {
-          alert("일기장 저장이 되지 않았습니다. 다시 시도해주세요.");
-          alert(error.response.data); // 서버에서 보낸 메시지: "이미 존재하는 이메일입니다."
-          errorMessage.value.email = error.response.data;
+          // alert("일기장 저장이 되지 않았습니다. 다시 시도해주세요.");
+          // alert(error.response.data); 
+          Swal.fire({
+            title:"저장 불가",
+            text : error.response.data,
+            icon:"warning",
+            confirmButtonText :"다시시도.",
+            confirmButtonColor : "#FFA500",
+            background : "#f5f5f5",
+            color:"#999"
+          });
+          // errorMessage.value.email = error.response.data;
         } else {
           console.error("API 호출 실패", error);
-          alert("일기장 저장이 되지 않았습니다. 다시 시도해주세요.");
+          // alert("일기장 저장이 되지 않았습니다. 다시 시도해주세요.");      
+          Swal.fire({
+            title:"API 호출 실패",
+            text : error.response.data,
+            icon:"warning",
+            confirmButtonText :"다시 시도",
+            confirmButtonColor : "#FFA500",
+            background : "#f5f5f5",
+            color:"#999"
+          });
         }
       }
     };

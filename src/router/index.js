@@ -14,9 +14,11 @@ import AgrrementPolicy from "@/page/AgrrementPolicy.vue";
 import DiaryWriting from "@/page/DiaryWriting.vue";
 import DiaryView from "@/page/DiaryView.vue";
 import DiaryList from "@/page/DiaryList.vue";
+import EditPassword from "@/page/EditPassword.vue";
+import ConfirmPassword from "@/page/ConfirmPassword.vue";
 
 const routes = [
-  { path: "/", name: "Home", component: Home },
+  { path: "/", name: "Home", component: Home }, 
   { path: "/about", name: "About", component: About },
   { path: "/notFound", name: "NotFound", component: NotFound },
   { path: "/componentA", name: "ComponentA", component: ComponentA },
@@ -31,6 +33,8 @@ const routes = [
   {path:"/diary/write", name:"DiaryWriting",component:DiaryWriting},
   {path:"/diary/view/:diaryId", name:"DiaryView",component:DiaryView},
   {path:"/diary/common", name:"DiaryList",component:DiaryList},
+  { path: "/mypage/confirmPassword", name: "ConfirmPassword", component: ConfirmPassword },
+  { path: "/edit/password", name: "EditPassword", component: EditPassword }, 
   {
     path: "/:pathMatch(.*)*",
     name: "CatchAll",
