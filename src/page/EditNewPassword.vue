@@ -7,27 +7,24 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 export default {
-  name: 'EditPassword', 
+  name: 'EditNewPassword', 
   setup(){
     const router = useRouter();
     const cookies = new Cookies(); 
 
-    const goToPage = (path) => {
-        router.push(path);
-      };
     const isEditPg = ref(true);   
 
     //  입력 데이터
-    const editData = ref({
-      userId:"",
-      password : "", 
+    const editData = ref({ 
+      newPassword : "", 
+      checkNewPassword : "",
     });
     const errorWarning = ref({
-      userId:  false,
-      password:  false,
+      newPassword:  false,
+      checkNewPassword:  false,
     });
     const idErrorMessage = ref("");
-    const passwordErrorMessage = ref("");
+    const checkNewPasswordErrorMessage = ref("");
     
     // const idValid = ref(true);
     // const passwordValid = ref(true);
@@ -43,10 +40,10 @@ export default {
 
     const onClickEditButton = async() => {
       console.log(" 데이터 :", editData.value);
-      if(!editData.value.userId){        
+      if(!editData.value.newPassword){        
         Swal.fire({
-              title: "아이디 오류",
-              text: "아이디를 입력해주세요",
+              title: "비밀번호 변경",
+              text: "비밀번호 형식에 맞지 않습니다.",
               icon: "warning",
               confirmButtonText: "확인",
               confirmButtonColor: "#FF5733"
@@ -54,12 +51,12 @@ export default {
         return;
       }
 
-      if(!editData.value.password){
+      if(!editData.value.checkNewPassword){
         // alert("비밀번호를 입력해주세요.");
         
         Swal.fire({
-              title: "비밀번호 오류",
-              text: "비밀번호를 입력해주세요",
+              title: "비밀번호 변경",
+              text: "비밀번호가 일치하지 않습니다.",
               icon: "warning",
               confirmButtonText: "확인",
               confirmButtonColor: "#FF5733"
@@ -80,13 +77,13 @@ export default {
         
         Swal.fire({
               title: "성공",
-              text: "비밀번호가 맞습니다",
+              text: "비밀번호가 변경되었습니다.",
               icon: "success",
               confirmButtonText: "확인",
               confirmButtonColor: "#357abd",
             });
 
-            router.push("/diary/common").then(() => {
+            router.push("/").then(() => {
         location.reload(); // 새로고침
       });  
       } catch (error) {
@@ -108,7 +105,7 @@ export default {
     //  API 호출
     const sendEditData = async () => {
       try {
-        const response = await axios.post("http://localhost:8080/api/auth/edit", editData.value);
+        const response = await axios.post("http://localhost:8080/api/auth/editPassword", editData.value);
         return response.data; // 응답 데이터를 반환합니다.
       } catch (error) {
         console.error("API 호출 실패:", error.response?.data || error.message);
@@ -116,15 +113,17 @@ export default {
       }
 };
 
+
+    
+
     return{
       isEditPg,
-      goToPage,
       editData, 
       errorWarning,
       showPassword,
       handleEditData,
       idErrorMessage,
-      passwordErrorMessage,
+      checkNewPasswordErrorMessage,
       togglePasswordVisibility,
       onClickEditButton
     };
@@ -135,51 +134,47 @@ export default {
 
 <template>
 <div class="editPage">
-  <header class="confirmHeader">
-      <h1>비밀번호 인증</h1>
-    </header>
   <div id="edit_form" class="edit_form">
-    <h2 class="confirmTitle">개인정보 보호를 위해<br>비밀번호 확인이 필요해요.</h2>
-
       <!--폼 렌더링-->
           <!-- 폼-->
+          <form @submit.prevent="onClickEditButton" class="edit_form_box">
    
+          <!--ID-->
           <div class="edit-session">
             <div class="edit-label">
-              <label for="password" class="form-label">현재비밀번호</label>
+              <label for="id" class="form-label">새 비밀번호</label>
             </div>
-            <!-- <div>
-              <input size="30" type="text"  v-model="editData.userId" @input="handleIdChange" class="edit_form-input" name="userId" id="userId"/>
-              <div class="edit_form-oo" :style="{ color: errorWarning.userId ? 'red' : 'black' }">
+            <div>
+              <input size="30" type="text"  v-model="editData.newPassword" @input="handleIdChange" class="edit_form-input" name="newPassword" id="newPassword" placeholder="새 비밀번호"/>
+              <div class="edit_form-oo" :style="{ color: errorWarning.newPassword ? 'red' : 'black' }">
                 {{ idErrorMessage }}
               </div>
-            </div> -->
+            </div> 
           </div>
           
           
         <!--패스워드-->
         <div class="edit-session">
-          <!-- <div class="edit-label">
-            <label  for="password" class="form-label">Password</label>
-          </div> -->
+           
           <div>
-            <input size="30" :type="showPassword ? 'text' : 'password'" v-model.trim="editData.password" @input="handlePasswordChange" class="edit_form-input" name="password"  @keyup.enter="onClickConfirmButton" id="password" placeholder="현재 비밀번호"/>
-            <button type="button"  class="password_toggle" @click="togglePasswordVisibility">
+            <input size="30" :type="showPassword ? 'text' : 'password'" v-model="editData.checkNewPassword" @input="handlePasswordChange" class="edit_form-input" name="checkNewPassword"  id="newpassword" placeholder="새 비밀번호 확인"/>
+            <button type="button" @click="togglePasswordVisibility">
               {{  showPassword ? '숨기기' : '보기' }}
             </button>
-          <!-- <div class="edit_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }"> 
+          <div class="edit_form-oo" v-if="errorWarning.checkNewPassword" :style="{ color: errorWarning.checkNewPassword ? 'red' : 'black' }"> 
             {{ passwordErrorMessage }}
-        </div> -->
-        <p v-if="passwordErrorMessage" class="error-message">
-          {{ passwordErrorMessage }}
-        </p>
+        </div>
+        <span>
+          영문/숫자/특수문자를 포함하여 8~12자로 입력해주세요.
+        </span>
       </div>
       </div>
 
       <!--  버튼 -->
       <div>
-        <button type="submit" class="edit_form_button" @click="goToPage('/edit/newPassword')" :disabled="!editData.password">확인</button>
+        <button type="submit" class="edit_form_button">비밀번호 변경</button>
       </div>
+    </form>
    </div>
 </div>
 </template>

@@ -31,20 +31,7 @@ export default {
     const togglePasswordVisibility = () =>{
       showPassword.value = !showPassword.value;
     }
-    // 로그인 상태 확인 후 리다이렉트
-    onMounted(() => {
-      const userData = cookies.get("userData");
-      if(!userData){
-        console.log("로그인 필요");
-        loginData.value = {
-          userId : "",
-          password : "",
-        };
-        router.push("/login");
-      }  else{
-        router.push("/diary/common");
-      }
-    });
+    
 
     const handleLoginData = (event) =>{
       loginData.value[event.target.name] = event.target.value;
@@ -85,6 +72,8 @@ export default {
         // JWT 토큰을 쿠키 또는 localStorage에 저장
         cookies.set("jwt", jwtToken, { path: "/" });
         localStorage.setItem("userId", loginData.value.userId);
+        localStorage.setItem("password", loginData.value.password);
+
         // alert("로그인을 완료했습니다.");
         
         Swal.fire({

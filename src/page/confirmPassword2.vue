@@ -7,7 +7,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 export default {
-  name: 'EditPassword', 
+  name: 'confirmPassword2', 
   setup(){
     const router = useRouter();
     const cookies = new Cookies(); 
@@ -19,17 +19,17 @@ export default {
 
     //  입력 데이터
     const editData = ref({
-      userId:"",
-      password : "", 
+        checkId: localStorage.getItem("userId"),
+        password : "", 
     });
     const errorWarning = ref({
-      userId:  false,
-      password:  false,
+        checkId:  false,
+        password:  false,
     });
+
     const idErrorMessage = ref("");
     const passwordErrorMessage = ref("");
     
-    // const idValid = ref(true);
     // const passwordValid = ref(true);
     const showPassword = ref(false);
     const togglePasswordVisibility = () =>{
@@ -86,7 +86,7 @@ export default {
               confirmButtonColor: "#357abd",
             });
 
-            router.push("/diary/common").then(() => {
+            router.push("/").then(() => {
         location.reload(); // 새로고침
       });  
       } catch (error) {
@@ -108,7 +108,7 @@ export default {
     //  API 호출
     const sendEditData = async () => {
       try {
-        const response = await axios.post("http://localhost:8080/api/auth/edit", editData.value);
+        const response = await axios.post("http://localhost:8080/api/auth/checkPassword", editData.value);
         return response.data; // 응답 데이터를 반환합니다.
       } catch (error) {
         console.error("API 호출 실패:", error.response?.data || error.message);
@@ -136,49 +136,26 @@ export default {
 <template>
 <div class="editPage">
   <header class="confirmHeader">
-      <h1>비밀번호 인증</h1>
+      <h1 class="confirmTitle">비밀번호 인증</h1>
     </header>
-  <div id="edit_form" class="edit_form">
-    <h2 class="confirmTitle">개인정보 보호를 위해<br>비밀번호 확인이 필요해요.</h2>
+  <div  class="layoutContainer">
+    <p class="confirmTitle2">개인정보 보호를 위해<br>비밀번호 확인이 필요해요.</p>
+        <div class="checkId">
+            <input type="text" v-model="editData.checkId" disabled />
+        </div>
 
-      <!--폼 렌더링-->
-          <!-- 폼-->
-   
-          <div class="edit-session">
-            <div class="edit-label">
-              <label for="password" class="form-label">현재비밀번호</label>
-            </div>
-            <!-- <div>
-              <input size="30" type="text"  v-model="editData.userId" @input="handleIdChange" class="edit_form-input" name="userId" id="userId"/>
-              <div class="edit_form-oo" :style="{ color: errorWarning.userId ? 'red' : 'black' }">
-                {{ idErrorMessage }}
-              </div>
-            </div> -->
-          </div>
-          
-          
-        <!--패스워드-->
-        <div class="edit-session">
-          <!-- <div class="edit-label">
-            <label  for="password" class="form-label">Password</label>
-          </div> -->
-          <div>
-            <input size="30" :type="showPassword ? 'text' : 'password'" v-model.trim="editData.password" @input="handlePasswordChange" class="edit_form-input" name="password"  @keyup.enter="onClickConfirmButton" id="password" placeholder="현재 비밀번호"/>
-            <button type="button"  class="password_toggle" @click="togglePasswordVisibility">
+          <div class="gapCheckInput">
+            <div class="password_field">
+                <input :type="showPassword? 'text' : 'password'" v-model.trim="editData.checkPassword" @input="handleIdChange"  id="checkPassword" @keyup.enter="onClickConfirmButton" placeholder="비밀번호" />
+                <button type="button"  class="password_toggle" @click="togglePasswordVisibility">
               {{  showPassword ? '숨기기' : '보기' }}
             </button>
-          <!-- <div class="edit_form-oo" v-if="errorWarning.password" :style="{ color: errorWarning.password ? 'red' : 'black' }"> 
-            {{ passwordErrorMessage }}
-        </div> -->
-        <p v-if="passwordErrorMessage" class="error-message">
-          {{ passwordErrorMessage }}
-        </p>
-      </div>
-      </div>
+            </div> 
+          </div>
 
       <!--  버튼 -->
       <div>
-        <button type="submit" class="edit_form_button" @click="goToPage('/edit/newPassword')" :disabled="!editData.password">확인</button>
+        <button type="submit" class="confirmButton" @click="goToPage('/edit/newPassword')" :disabled="!editData.password">확인</button>
       </div>
    </div>
 </div>
@@ -186,77 +163,78 @@ export default {
 
 <style scoped> 
 
-
-.editPage {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 100%;
-    background-color: #f8f9fa;
-    padding: 8rem;
-    flex-direction: column;
-}
-.edit_form{
-    display: flex;
-    height: 100%;
-    width: 100%;
-    padding: 5rem;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    /* margin: auto; */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    justify-content: flex-start;
-    flex-direction: column;
-    margin-bottom: 1.5rem; 
-  margin-bottom: 1.5rem; /* 필드 간 여백 */
-}
-
-.edit_form_box{
-    height: 90%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-.edit-label{
-  font-size: 1rem;
+.confirmHeader {
+  text-align: center;
+  font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
-} 
-
-.edit_form-input{
-  width: 100%; /* 필드 너비가 컨테이너에 맞춰짐 */
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 0.5rem;
-  box-sizing: border-box;
 }
 
-.edit_form-input:focus{
-  border: 1px solid #4a90e2;
-  outline: none;
-
+.layoutContainer {
+  padding: 4rem 2rem;
 }
 
-.edit_form_button{
-  width: 100%; /* 버튼이 컨테이너에 맞춰짐 */
-  color: var(--int-gray0);
-  background: #ddd;
-  padding: 0.8rem 1.5rem;
-  border-radius: 5px;
-  font-size: 1rem;
+.confirmTitle {
+  margin-bottom: 2rem;
+  font-size: 1.6rem;
+}
+
+.checkId input {
+  width: 100%;
+  height: 40px;
+  font-size: 1.2rem;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.password_field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password_field input {
+    width: 100%;
+  height: 40px;
+  font-size: 1.2rem;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.password_toggle {
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 5px;
+  right: 10px;
 }
 
-.edit_form_button:hover{
-  background-color: #357abd;
-  color : white;
-
+.password_toggle img {
+  width: 20px;
+  height: 20px;
 }
-.edit_form-oo{
-  font-size: 0.9rem;
+
+.error-message {
   color: red;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  margin-top: 5px;
 }
- 
+
+.confirmButton {
+  width: 100%;
+  height: 40px;
+  font-size: 1.2rem;
+  background: #357abd;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+/* .confirmButton:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+} */
 </style>

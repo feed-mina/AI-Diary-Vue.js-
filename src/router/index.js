@@ -16,6 +16,8 @@ import DiaryView from "@/page/DiaryView.vue";
 import DiaryList from "@/page/DiaryList.vue";
 import EditPassword from "@/page/EditPassword.vue";
 import ConfirmPassword from "@/page/ConfirmPassword.vue";
+import ConfirmPassword2 from "@/page/ConfirmPassword2.vue";
+import EditNewPassword from "@/page/EditNewPassword.vue";
 
 const routes = [
   { path: "/", name: "Home", component: Home }, 
@@ -33,7 +35,10 @@ const routes = [
   {path:"/diary/write", name:"DiaryWriting",component:DiaryWriting},
   {path:"/diary/view/:diaryId", name:"DiaryView",component:DiaryView},
   {path:"/diary/common", name:"DiaryList",component:DiaryList},
-  { path: "/mypage/confirmPassword", name: "ConfirmPassword", component: ConfirmPassword },
+  { path: "/mypage/confirmPassword", name: "ConfirmPassword", component: ConfirmPassword }, 
+  { path: "/mypage/confirmPassword2", name: "ConfirmPassword2", component: ConfirmPassword2 }, 
+  { path: "/edit/newPassword", name: "EditNewPassword", component:EditNewPassword}, //EditNewPassword.vue
+  { },
   { path: "/edit/password", name: "EditPassword", component: EditPassword }, 
   {
     path: "/:pathMatch(.*)*",

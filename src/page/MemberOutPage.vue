@@ -132,7 +132,10 @@
                         <button type="button" class="base_ButtonRoot-sc-206d6909-0 dhVHxS button_StyledButtonBase3-sc-43279e9a-2 jCkVaj">SMS 수신거부</button>
                          -->
                          <button type="button" class="base_ButtonRoot button_StyledButtonBase3 memberOut_form_button" @click="goToPage('/mypage/confirmPassword')">개인정보 수정</button>
-                        <button type="button" class="base_ButtonRoot  button_StyledButtonBase3 memberOut_form_button" @click="goToPage('/edit/password')">비밀번호 변경</button>
+
+                         <button type="button" class="base_ButtonRoot button_StyledButtonBase3 memberOut_form_button" @click="goToPage('/edit/password')">비밀번호 변경</button>
+                        
+                        <!-- <button type="button" class="base_ButtonRoot  button_StyledButtonBase3 memberOut_form_button" @click="goToPage('/edit/password')">비밀번호 변경</button> -->
 
                   </div>
                </section>
