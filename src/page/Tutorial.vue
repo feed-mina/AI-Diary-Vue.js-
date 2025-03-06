@@ -117,7 +117,7 @@ export default {
                    </div>
                   <!-- <button type="button" class="aiButton">
                      <div  v-tooltip="'사진이 생성되는 동안 일기를 작성할 수  없습니다.'">
-                      <span>AI 이미지 생성</span>
+                      <span>감정 다이어리</span>
                      </div>
                   </button> -->
                 </div>

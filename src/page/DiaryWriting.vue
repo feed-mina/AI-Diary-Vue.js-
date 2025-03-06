@@ -295,7 +295,7 @@
                            <input type="text" id="tag2" name="tag2" v-model="diaryContentData.tags.tag2" placeholder="tag2" />
                            <input type="text" id="tag3" name="tag3" v-model="diaryContentData.tags.tag3" placeholder="tag3" />
                            <!-- <button type="button" class="aiButton">
-                              <span>AI 이미지 생성</span>
+                              <span>감정 다이어리</span>
                               </button> -->
                         </div>
                      </div>

@@ -61,7 +61,7 @@ export default {
           <span class="home-header">
             <br/>
             <strong>
-              ai이미지 생성 기능을 이용한
+              
             </strong>
             <br/>
             <strong>
